@@ -1,0 +1,20 @@
+{{ define "login" }}
+    {{template "layout_top" .}}
+
+    <h2>Login</h2>
+    <form method="post" action="/">
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input class="form-control" name="username" id="username" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" id="password" required>
+        </div>
+        <button class="btn btn-primary">Login</button>
+    </form>
+
+    {{template "layout_bottom" .}}
+
+{{ end }}
+

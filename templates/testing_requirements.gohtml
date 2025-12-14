@@ -1,0 +1,23 @@
+{{ define "testing_requirements" }}
+    {{template "layout_top" .}}
+
+    <h2>Testing Requirements</h2>
+    <form method="post" action="/testing">
+        <div class="mb-3">
+            <label for="rank" class="form-label">Next Rank</label>
+            <select class="form-select" id="rank" name="rank_id">
+                {{range .Dropdown}}
+                    <option value="{{.ID}}" {{if $.Selected}}{{if eq $.Selected.ID .ID}}selected{{end}}{{end}}>{{.Name}}</option>
+                {{end}}
+            </select>
+        </div>
+{{/*        <button class="btn btn-secondary">View</button>*/}}
+    </form>
+
+    <hr>
+    <h4>Requirements</h4>
+    <p>{{.Req}}</p>
+
+    {{template "layout_bottom" .}}
+
+{{ end }}

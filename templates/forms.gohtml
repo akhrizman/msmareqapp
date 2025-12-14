@@ -1,0 +1,30 @@
+{{ define "forms" }}
+    {{template "layout_top" .}}
+
+    <h2>Forms</h2>
+    <form method="post" action="/forms">
+        <div class="mb-3">
+            <label for="rank" class="form-label">Next Required Form</label>
+            <select class="form-select" id="rank" name="rank_id">
+                {{range .Ranks}}
+                    <option value="{{.ID}}" {{if $.Selected}}{{if eq $.Selected.ID .ID}}selected{{end}}{{end}}>{{.Name}}</option>
+                {{end}}
+            </select>
+        </div>
+{{/*        <button class="btn btn-secondary">View</button>*/}}
+    </form>
+
+    {{if .Form}}
+        <hr>
+        <h3>{{.Form.Name}}</h3>
+        <p>{{.Form.Description}}</p>
+        <h5>Steps</h5>
+        <pre>{{.Form.Steps}}</pre>
+        {{if .Form.VideoLink}}
+            <p>Video: <a href="{{.Form.VideoLink}}">{{.Form.VideoLink}}</a></p>
+        {{end}}
+    {{end}}
+
+    {{template "layout_bottom" .}}
+
+{{ end }}

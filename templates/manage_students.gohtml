@@ -1,0 +1,59 @@
+{{ define "manage_students" }}
+    {{template "layout_top" .}}
+
+    <h2>Manage Students</h2>
+
+    <form method="post" action="/admin/manage-students">
+        <div class="mb-3">
+            <label>Select User</label>
+            <input list="userlist" name="selected_username" class="form-control" required>
+            <datalist id="userlist">
+                {{range .Users}}
+                    <option value="{{.Username}}">{{.FirstName}} {{.LastName}}</option>
+                {{end}}
+            </datalist>
+        </div>
+
+        <div class="mb-3">
+            <label>First Name</label>
+            <input name="first_name" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label>Last Name</label>
+            <input name="last_name" class="form-control">
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="is_admin" name="is_admin">
+            <label class="form-check-label">Admin</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="allow_full_access" name="allow_full_access">
+            <label class="form-check-label">Allow Full Access</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="is_active" name="is_active">
+            <label class="form-check-label">Active</label>
+        </div>
+
+        <div class="mb-3 mt-2">
+            <label>Rank</label>
+            <select name="rank_id" class="form-select">
+                <option value="0">-- none --</option>
+                {{range .Ranks}}
+                    <option value="{{.ID}}">{{.Name}}</option>
+                {{end}}
+            </select>
+        </div>
+
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="reset_password" name="reset_password">
+            <label class="form-check-label">Reset password to default</label>
+        </div>
+
+        <button class="btn btn-primary">Update</button>
+    </form>
+
+    {{template "layout_bottom" .}}
+
+{{ end }}
