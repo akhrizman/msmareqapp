@@ -1,5 +1,6 @@
 {{define "navbar"}}
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <link href="./static/navbar.css" rel="stylesheet" type="text/css">
+    <nav class="navbar navbar-expand-lg navbar-msma">
         <div class="container-fluid">
 
             <!-- Brand -->
@@ -8,7 +9,7 @@
                         id="msmaLogo"
                         src="/static/msmalogo.png"
                         alt="MSMA Requirements Handbook"
-                        style="width:150px"
+                        style="width:200px"
                 >
             </a>
 
@@ -46,7 +47,7 @@
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav ms-lg-auto text-center text-lg-start mb-2 mb-lg-0">
                     {{if .User}}
-                        <li class="nav-item"><a class="nav-link" href="/profile">Profile</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/profile">My Profile</a></li>
                         <li class="nav-item"><a class="nav-link" href="/testing">Test Requirements</a></li>
                         <li class="nav-item"><a class="nav-link" href="/forms">Forms</a></li>
 

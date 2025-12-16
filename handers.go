@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
 )
 
@@ -329,7 +330,8 @@ func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	first := r.FormValue("first_name")
 	last := r.FormValue("last_name")
-	username := r.FormValue("username")
+	username := GenerateValidUsername(first + "." + last)
+	fmt.Println(username)
 	rankID, _ := strconv.Atoi(r.FormValue("rank_id"))
 	allow := parseBoolFromForm(r, "allow_full_access")
 	if username == "" || first == "" || last == "" {
@@ -356,6 +358,31 @@ func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	ranks, _ := GetAllRanks()
 	render(w, "add_user", map[string]interface{}{"User": u, "Ranks": ranks, "Success": fmt.Sprintf("User created with default password: %s", defaultPwd)})
+}
+
+var trailingNumberRegex = regexp.MustCompile(`^(.*?)(\d+)$`)
+
+func GenerateValidUsername(potentialUsername string) string {
+	user, _ := GetUserByUsername(potentialUsername)
+	if user != nil {
+		fmt.Println("existingUser:", user.Username)
+
+		base := potentialUsername
+		num := 1
+
+		if matches := trailingNumberRegex.FindStringSubmatch(potentialUsername); matches != nil {
+			base = matches[1]
+			n, _ := strconv.Atoi(matches[2])
+			num = n + 1
+		}
+
+		incrementedUsername := fmt.Sprintf("%s%d", base, num)
+		fmt.Println("incrementedUsername:", incrementedUsername)
+
+		return GenerateValidUsername(incrementedUsername)
+	}
+
+	return potentialUsername
 }
 
 func ManageUsersPageHandler(w http.ResponseWriter, r *http.Request) {

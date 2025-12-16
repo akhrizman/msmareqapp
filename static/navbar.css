@@ -1,0 +1,31 @@
+.navbar-msma {
+    background-color: #0594b6;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+.navbar-msma .navbar-brand {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* Navbar text + links */
+.navbar-msma .navbar-brand,
+.navbar-msma .nav-link {
+    color: #ffffff;
+}
+
+/* Hover / active states */
+.navbar-msma .nav-link:hover,
+.navbar-msma .nav-link:focus {
+    color: #e6f4fa;
+}
+
+/* Hamburger icon (important) */
+.navbar-msma .navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.navbar-msma .navbar-toggler-icon {
+    filter: invert(1);
+}

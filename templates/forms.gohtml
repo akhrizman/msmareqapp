@@ -4,7 +4,7 @@
     <h2>Forms</h2>
     <form method="post" action="/forms">
         <div class="mb-3">
-            <label for="rank" class="form-label">Next Required Form</label>
+            <label for="rank" class="form-label">My Next Required Form: <em>{{.Form.Name}}</em></label>
             <select class="form-select" id="rank" name="rank_id">
                 {{range .Ranks}}
                     <option value="{{.ID}}" {{if $.Selected}}{{if eq $.Selected.ID .ID}}selected{{end}}{{end}}>{{.Name}}</option>
