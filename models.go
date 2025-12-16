@@ -14,11 +14,11 @@ type Form struct {
 }
 
 type StudentRank struct {
-	ID           int
-	Name         string
-	Description  string
-	Requirements string
-	FormID       sql.NullInt64
+	ID           int           `json:"id"`
+	Name         string        `json:"name"`
+	Description  string        `json:"description"`
+	Requirements string        `json:"requirements"`
+	FormID       sql.NullInt64 `json:"formId"`
 }
 
 type User struct {
@@ -69,6 +69,25 @@ func UpdateUserPassword(username, newHash string, forceChange bool) error {
 func UpdateUserProfile(u *User) error {
 	_, err := db.Exec(`UPDATE user SET first_name = ?, last_name = ? WHERE username = ?`, u.FirstName, u.LastName, u.Username)
 	return err
+}
+
+func GetAllTestableRanks() ([]StudentRank, error) {
+	rows, err := db.Query(`SELECT id, name, description, requirements, form_id FROM student_rank WHERE id BETWEEN 2 AND 16  ORDER BY id`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []StudentRank
+	for rows.Next() {
+		var r StudentRank
+		var formID sql.NullInt64
+		if err := rows.Scan(&r.ID, &r.Name, &r.Description, &r.Requirements, &formID); err != nil {
+			return nil, err
+		}
+		r.FormID = formID
+		out = append(out, r)
+	}
+	return out, nil
 }
 
 func GetAllRanks() ([]StudentRank, error) {

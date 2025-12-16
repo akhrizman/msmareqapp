@@ -11,13 +11,38 @@
                 {{end}}
             </select>
         </div>
-{{/*        <button class="btn btn-secondary">View</button>*/}}
     </form>
 
     <hr>
     <h4>Requirements</h4>
-    <p>{{.Req}}</p>
+    <p id="requirementText">{{.Req}}</p>
 
     {{template "layout_bottom" .}}
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const rankSelect = document.getElementById("rank");
+            const requirementText = document.getElementById("requirementText");
+
+            rankSelect.addEventListener("change", function () {
+                const rankId = this.value;
+
+                fetch(`/rank?id=${encodeURIComponent(rankId)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Failed to fetch requirements");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Update requirements text from JSON response
+                        requirementText.innerText = data.requirements ?? "";
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        requirementText.innerText = "Unable to load requirements.";
+                    });
+            });
+        });
+    </script>
 {{ end }}

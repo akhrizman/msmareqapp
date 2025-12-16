@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -36,6 +37,7 @@ var templates = template.Must(
 		"templates/navbar.gohtml",
 		"templates/layout_top.gohtml",
 		"templates/layout_bottom.gohtml",
+		"templates/home.gohtml",
 		"templates/login.gohtml",
 		"templates/profile.gohtml",
 		"templates/testing_requirements.gohtml",
@@ -56,13 +58,21 @@ func render(w http.ResponseWriter, name string, data map[string]interface{}) {
 }
 
 // GET /
-func LoginGetHandler(w http.ResponseWriter, r *http.Request) {
+func HomeGetHandler(w http.ResponseWriter, r *http.Request) {
+	render(w, "home", map[string]interface{}{
+		"Title": "Home",
+	})
+}
+
+// GET /login
+func LoginPageGetHandler(w http.ResponseWriter, r *http.Request) {
 	render(w, "login", map[string]interface{}{
 		"Title": "Login",
 	})
 }
 
-func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("HELLO, I'M HERE 2")
 	r.ParseForm()
 	username := r.FormValue("username")
 	password := r.FormValue("password")
@@ -82,6 +92,14 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, "/testing", http.StatusSeeOther)
+}
+
+// GET /
+func LogoutGetHandler(w http.ResponseWriter, r *http.Request) {
+	LogoutUser(w, r)
+	render(w, "login", map[string]interface{}{
+		"Title": "Login",
+	})
 }
 
 // Change password enforced page
@@ -155,7 +173,7 @@ func ProfilePost(w http.ResponseWriter, r *http.Request) {
 // Testing Requirements
 func TestingGet(w http.ResponseWriter, r *http.Request) {
 	u, _ := CurrentUser(r)
-	allRanks, _ := GetAllRanks()
+	allRanks, _ := GetAllTestableRanks()
 	nextID, _ := nextRankIDForUser(u)
 	// Build dropdown depending on allow_full_access
 	var dropdown []StudentRank
@@ -189,23 +207,10 @@ func TestingGet(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func TestingPost(w http.ResponseWriter, r *http.Request) {
-	u, _ := CurrentUser(r)
-	r.ParseForm()
-	rankID, _ := strconv.Atoi(r.FormValue("rank_id"))
-	rank, _ := GetRankByID(rankID)
-	render(w, "testing_requirements", map[string]interface{}{
-		"User":     u,
-		"Dropdown": nil,
-		"Selected": rank,
-		"Req":      rank.Requirements,
-	})
-}
-
 // Forms page
 func FormsGet(w http.ResponseWriter, r *http.Request) {
 	u, _ := CurrentUser(r)
-	allRanks, _ := GetAllRanks()
+	allRanks, _ := GetAllTestableRanks()
 	nextID, _ := nextRankIDForUser(u)
 
 	var ranksToShow []StudentRank
@@ -240,23 +245,36 @@ func FormsGet(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func FormsPost(w http.ResponseWriter, r *http.Request) {
-	u, _ := CurrentUser(r)
-	r.ParseForm()
-	rankID, _ := strconv.Atoi(r.FormValue("rank_id"))
-	rank, _ := GetRankByID(rankID)
-	var form *Form
-	if rank != nil && rank.FormID.Valid {
-		formID := int(rank.FormID.Int64)
-		form, _ = GetFormByID(formID)
+func RankGet(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
 	}
-	allRanks, _ := GetAllRanks()
-	render(w, "forms", map[string]interface{}{
-		"User":     u,
-		"Ranks":    allRanks,
-		"Selected": rank,
-		"Form":     form,
-	})
+
+	idParam := r.URL.Query().Get("id")
+	if idParam == "" {
+		http.Error(w, "Missing id parameter", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		http.Error(w, "Invalid id parameter", http.StatusBadRequest)
+		return
+	}
+
+	rank, err := GetRankByID(id)
+	if err == sql.ErrNoRows {
+		http.Error(w, "Rank not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(rank)
 }
 
 // Admin - Add Student

@@ -14,11 +14,10 @@ func main() {
 	r := mux.NewRouter()
 
 	// public
-	r.HandleFunc("/", LoginGetHandler).Methods("GET")
-	r.HandleFunc("/", LoginPostHandler).Methods("POST")
+	r.HandleFunc("/", HomeGetHandler).Methods("GET")
 
-	r.HandleFunc("/login", LoginGetHandler).Methods("GET")
-	r.HandleFunc("/login", LoginPostHandler).Methods("POST")
+	r.HandleFunc("/login", LoginPageGetHandler).Methods("GET")
+	r.HandleFunc("/login", LoginHandler).Methods("POST")
 
 	// change password (requires logged in)
 	r.Handle("/change-password", RequireLogin(http.HandlerFunc(ChangePasswordGet))).Methods("GET")
@@ -28,14 +27,14 @@ func main() {
 	auth := r.PathPrefix("/").Subrouter()
 	auth.Use(func(next http.Handler) http.Handler { return RequireLogin(next) })
 
+	auth.HandleFunc("/logout", LogoutGetHandler).Methods("GET")
+
 	auth.HandleFunc("/profile", ProfileGet).Methods("GET")
 	auth.HandleFunc("/profile", ProfilePost).Methods("POST")
 
 	auth.HandleFunc("/testing", TestingGet).Methods("GET")
-	auth.HandleFunc("/testing", TestingPost).Methods("POST")
 
 	auth.HandleFunc("/forms", FormsGet).Methods("GET")
-	auth.HandleFunc("/forms", FormsPost).Methods("POST")
 
 	// admin
 	admin := r.PathPrefix("/admin").Subrouter()
@@ -47,6 +46,9 @@ func main() {
 
 	admin.HandleFunc("/manage-students", ManageStudentsGet).Methods("GET")
 	admin.HandleFunc("/manage-students", ManageStudentsPost).Methods("POST")
+
+	// RestAPI Endpoints
+	auth.HandleFunc("/rank", RankGet).Methods("GET")
 
 	// static (if you want to serve local css/js)
 	// r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
