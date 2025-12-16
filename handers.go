@@ -92,7 +92,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	LogoutUser(w, r)
-	render(w, "login", map[string]interface{}{})
+	render(w, "home", map[string]interface{}{})
 }
 
 // ChangePasswordPageHandler Shows change password form on first login

@@ -1,35 +1,73 @@
 {{define "navbar"}}
-
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center me-2" href="./">
-                <img id="msmaLogo" src="./static/msmalogo.png" alt="MSMA Requirements Handbook" class="navbar-logo" style="width:150px">
-            </a>
-            <a class="navbar-brand" href="#">MKS Testing Handbook</a>
 
-            <!-- mobile hamburger toggler (right aligned) -->
-            <button class="navbar-toggler order-3 ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <!-- Brand -->
+            <a class="navbar-brand d-flex align-items-center me-3" href="/">
+                <img
+                        id="msmaLogo"
+                        src="/static/msmalogo.png"
+                        alt="MSMA Requirements Handbook"
+                        style="width:150px"
+                >
+            </a>
+
+            <!-- Auth links (left-aligned with logo on lg+) -->
+            <ul class="navbar-nav align-items-center me-auto d-none d-lg-flex">
+                {{if .User}}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                {{else}}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                {{end}}
+            </ul>
+
+            <!-- Hamburger -->
+            <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#mainNav"
+                    aria-controls="mainNav"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+            >
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <!-- Links -->
-            <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-                <ul class="navbar-nav mb-2 mb-lg-0">
+            <!-- Collapsible nav -->
+            <div class="collapse navbar-collapse" id="mainNav">
+                <!-- Mobile auth links -->
+                <ul class="navbar-nav text-center d-lg-none">
+                    {{if .User}}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/logout">Logout</a>
+                        </li>
+                    {{else}}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login">Login</a>
+                        </li>
+                    {{end}}
+                </ul>
+
+                <!-- Main nav (right-aligned on lg+) -->
+                <ul class="navbar-nav ms-lg-auto text-center text-lg-start mb-2 mb-lg-0">
                     {{if .User}}
                         <li class="nav-item"><a class="nav-link" href="/profile">Profile</a></li>
                         <li class="nav-item"><a class="nav-link" href="/testing">Test Requirements</a></li>
                         <li class="nav-item"><a class="nav-link" href="/forms">Forms</a></li>
+
                         {{if .User.IsAdmin}}
                             <li class="nav-item"><a class="nav-link" href="/admin/add-user">Add User</a></li>
                             <li class="nav-item"><a class="nav-link" href="/admin/manage-users">Manage Users</a></li>
                         {{end}}
-                        <li class="nav-item"><a class="nav-link" href="/logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
-                    {{else}}
-                        <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
                     {{end}}
                 </ul>
             </div>
+
         </div>
     </nav>
 {{end}}
