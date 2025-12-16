@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -26,12 +27,6 @@ var templateFuncs = template.FuncMap{
 	},
 }
 
-// load templates
-// var templates = template.Must(template.ParseGlob("templates/*"))
-//var templates = template.Must(
-//	template.New("").Funcs(templateFuncs).ParseGlob("templates/*"),
-//)
-
 var templates = template.Must(
 	template.New("").Funcs(templateFuncs).ParseFiles(
 		"templates/navbar.gohtml",
@@ -43,37 +38,35 @@ var templates = template.Must(
 		"templates/testing_requirements.gohtml",
 		"templates/forms.gohtml",
 		"templates/change_password.gohtml",
-		"templates/add_student.gohtml",
-		"templates/manage_students.gohtml",
+		"templates/add_user.gohtml",
+		"templates/manage_users.gohtml",
 	),
 )
-
-//var templates = template.Must(template.ParseGlob("templates/*")).Funcs(templateFuncs)
 
 func render(w http.ResponseWriter, name string, data map[string]interface{}) {
 	if data == nil {
 		data = map[string]interface{}{}
 	}
-	templates.ExecuteTemplate(w, name, data)
+	err := templates.ExecuteTemplate(w, name, data)
+	if err != nil {
+		log.Printf("error rendering template: %v", err)
+	}
 }
 
-// GET /
 func HomeGetHandler(w http.ResponseWriter, r *http.Request) {
-	render(w, "home", map[string]interface{}{
-		"Title": "Home",
-	})
+	render(w, "home", map[string]interface{}{})
 }
 
-// GET /login
 func LoginPageGetHandler(w http.ResponseWriter, r *http.Request) {
-	render(w, "login", map[string]interface{}{
-		"Title": "Login",
-	})
+	render(w, "login", map[string]interface{}{})
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("HELLO, I'M HERE 2")
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		log.Printf("Error parsing Login form: %v", err)
+		return
+	}
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 	user, err := GetUserByUsername(username)
@@ -86,7 +79,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// login success
-	LoginUser(w, r, username)
+	err = LoginUser(w, r, username)
+	if err != nil {
+		log.Printf("error logging in: %v", err)
+	}
 	if user.ForcePasswordChange {
 		http.Redirect(w, r, "/change-password", http.StatusSeeOther)
 		return
@@ -94,23 +90,23 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/testing", http.StatusSeeOther)
 }
 
-// GET /
-func LogoutGetHandler(w http.ResponseWriter, r *http.Request) {
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	LogoutUser(w, r)
-	render(w, "login", map[string]interface{}{
-		"Title": "Login",
-	})
+	render(w, "login", map[string]interface{}{})
 }
 
-// Change password enforced page
-func ChangePasswordGet(w http.ResponseWriter, r *http.Request) {
+// ChangePasswordPageHandler Shows change password form on first login
+func ChangePasswordPageHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := CurrentUser(r)
 	render(w, "change_password", map[string]interface{}{"User": u})
 }
 
-func ChangePasswordPost(w http.ResponseWriter, r *http.Request) {
+func ChangePasswordHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := CurrentUser(r)
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		log.Printf("Error parsing Change Password form: %v", err)
+	}
 	pw := r.FormValue("password")
 	pw2 := r.FormValue("password2")
 	if pw != pw2 {
@@ -133,15 +129,17 @@ func ChangePasswordPost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/testing", http.StatusSeeOther)
 }
 
-// Profile
-func ProfileGet(w http.ResponseWriter, r *http.Request) {
+func ProfilePageHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := CurrentUser(r)
 	render(w, "profile", map[string]interface{}{"User": u})
 }
 
-func ProfilePost(w http.ResponseWriter, r *http.Request) {
+func ProfileUpdateFormHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := CurrentUser(r)
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		log.Printf("Error parsing Profile Update form: %v", err)
+	}
 	fn := r.FormValue("first_name")
 	ln := r.FormValue("last_name")
 	if fn == "" || ln == "" {
@@ -170,8 +168,8 @@ func ProfilePost(w http.ResponseWriter, r *http.Request) {
 	render(w, "profile", map[string]interface{}{"User": u, "Success": "Profile updated"})
 }
 
-// Testing Requirements
-func TestingGet(w http.ResponseWriter, r *http.Request) {
+// TestingRequirementsPageHandler - Loads the next rank's Testing Requirements
+func TestingRequirementsPageHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := CurrentUser(r)
 	allRanks, _ := GetAllTestableRanks()
 	nextID, _ := nextRankIDForUser(u)
@@ -207,8 +205,8 @@ func TestingGet(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// Forms page
-func FormsGet(w http.ResponseWriter, r *http.Request) {
+// FormsPageHandler - Loads the next rank's form requirement
+func FormsPageHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := CurrentUser(r)
 	allRanks, _ := GetAllTestableRanks()
 	nextID, _ := nextRankIDForUser(u)
@@ -245,6 +243,7 @@ func FormsGet(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// RankGet Rank API to retrieve requirements
 func RankGet(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -274,19 +273,24 @@ func RankGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(rank)
+	err = json.NewEncoder(w).Encode(rank)
+	if err != nil {
+		log.Printf("Error encoding rank: %v", err)
+	}
 }
 
-// Admin - Add Student
-func AddStudentGet(w http.ResponseWriter, r *http.Request) {
+func AddUserPageHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := CurrentUser(r)
 	ranks, _ := GetAllRanks()
-	render(w, "add_student", map[string]interface{}{"User": u, "Ranks": ranks})
+	render(w, "add_user", map[string]interface{}{"User": u, "Ranks": ranks})
 }
 
-func AddStudentPost(w http.ResponseWriter, r *http.Request) {
+func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := CurrentUser(r)
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		log.Printf("Error parsing Add User form: %v", err)
+	}
 	first := r.FormValue("first_name")
 	last := r.FormValue("last_name")
 	username := r.FormValue("username")
@@ -294,7 +298,7 @@ func AddStudentPost(w http.ResponseWriter, r *http.Request) {
 	allow := parseBoolFromForm(r, "allow_full_access")
 	if username == "" || first == "" || last == "" {
 		ranks, _ := GetAllRanks()
-		render(w, "add_student", map[string]interface{}{"User": u, "Ranks": ranks, "Error": "missing fields"})
+		render(w, "add_user", map[string]interface{}{"User": u, "Ranks": ranks, "Error": "missing fields"})
 		return
 	}
 	newUser := &User{
@@ -311,31 +315,33 @@ func AddStudentPost(w http.ResponseWriter, r *http.Request) {
 	hashed, _ := HashPassword(defaultPwd)
 	if err := CreateUser(newUser, hashed); err != nil {
 		ranks, _ := GetAllRanks()
-		render(w, "add_student", map[string]interface{}{"User": u, "Ranks": ranks, "Error": "could not create user: " + err.Error()})
+		render(w, "add_user", map[string]interface{}{"User": u, "Ranks": ranks, "Error": "could not create user: " + err.Error()})
 		return
 	}
 	ranks, _ := GetAllRanks()
-	render(w, "add_student", map[string]interface{}{"User": u, "Ranks": ranks, "Success": fmt.Sprintf("User created with default password: %s", defaultPwd)})
+	render(w, "add_user", map[string]interface{}{"User": u, "Ranks": ranks, "Success": fmt.Sprintf("User created with default password: %s", defaultPwd)})
 }
 
-// Manage Students
-func ManageStudentsGet(w http.ResponseWriter, r *http.Request) {
+func ManageUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := CurrentUser(r)
 	users, _ := GetAllUsersExcept(u.Username)
 	ranks, _ := GetAllRanks()
-	render(w, "manage_students", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks})
+	render(w, "manage_users", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks})
 }
 
-func ManageStudentsPost(w http.ResponseWriter, r *http.Request) {
+func ManageUsersFormHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := CurrentUser(r)
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		log.Printf("Error parsing Manage User form: %v", err)
+	}
 	target := r.FormValue("selected_username")
 	// load the user
 	targetUser, err := GetUserByUsername(target)
 	if err != nil {
 		users, _ := GetAllUsersExcept(u.Username)
 		ranks, _ := GetAllRanks()
-		render(w, "manage_students", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks, "Error": "cannot find user"})
+		render(w, "manage_users", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks, "Error": "cannot find user"})
 		return
 	}
 	// update fields
@@ -349,7 +355,7 @@ func ManageStudentsPost(w http.ResponseWriter, r *http.Request) {
 	if err := UpdateUserAdminDetails(targetUser); err != nil {
 		users, _ := GetAllUsersExcept(u.Username)
 		ranks, _ := GetAllRanks()
-		render(w, "manage_students", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks, "Error": "update failed"})
+		render(w, "manage_users", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks, "Error": "update failed"})
 		return
 	}
 	if r.FormValue("reset_password") == "on" {
@@ -360,7 +366,7 @@ func ManageStudentsPost(w http.ResponseWriter, r *http.Request) {
 	}
 	users, _ := GetAllUsersExcept(u.Username)
 	ranks, _ := GetAllRanks()
-	render(w, "manage_students", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks, "Success": "Updated"})
+	render(w, "manage_users", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks, "Success": "Updated"})
 }
 
 // small helper

@@ -1,12 +1,12 @@
-{{ define "manage_students" }}
+{{ define "manage_users" }}
     {{template "layout_top" .}}
 
-    <h2>Manage Students</h2>
+    <h2>Manage Users</h2>
 
-    <form method="post" action="/admin/manage-students">
+    <form method="post" action="/admin/manage-users">
         <div class="mb-3">
-            <label>Select User</label>
-            <input list="userlist" name="selected_username" class="form-control" required>
+{{/*            <label>Select User</label>*/}}
+            <input placeholder="Search Student..." list="userlist" name="selected_username" class="form-control" required>
             <datalist id="userlist">
                 {{range .Users}}
                     <option value="{{.Username}}">{{.FirstName}} {{.LastName}}</option>
@@ -29,7 +29,7 @@
         </div>
         <div class="form-check">
             <input class="form-check-input" type="checkbox" id="allow_full_access" name="allow_full_access">
-            <label class="form-check-label">Allow Full Access</label>
+            <label class="form-check-label">Allow Access to All Requirements</label>
         </div>
         <div class="form-check">
             <input class="form-check-input" type="checkbox" id="is_active" name="is_active">
