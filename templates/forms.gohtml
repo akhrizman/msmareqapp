@@ -11,20 +11,53 @@
                 {{end}}
             </select>
         </div>
-{{/*        <button class="btn btn-secondary">View</button>*/}}
     </form>
 
     {{if .Form}}
         <hr>
-        <h3>{{.Form.Name}}</h3>
-        <p>{{.Form.Description}}</p>
+        <h3 id="formName">{{.Form.Name}}</h3>
+        <p id="formDescription">{{.Form.Description}}</p>
+{{/*        <p>Video: <a id="formVideoLink" href="{{.Form.VideoLink}}">{{.Form.VideoLink}}</a></p>*/}}
         <h5>Steps</h5>
-        <pre>{{.Form.Steps}}</pre>
-        {{if .Form.VideoLink}}
-            <p>Video: <a href="{{.Form.VideoLink}}">{{.Form.VideoLink}}</a></p>
-        {{end}}
+        <pre id="formSteps">{{.Form.Steps}}</pre>
     {{end}}
 
     {{template "layout_bottom" .}}
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const rankSelect = document.getElementById("rank");
+            const formName = document.getElementById("formName");
+            const formDescription = document.getElementById("formDescription");
+            // const formVideoLink = document.getElementById("formVideoLink");
+            const formSteps = document.getElementById("formSteps");
+
+            rankSelect.addEventListener("change", function () {
+                const rankId = this.value;
+
+                fetch(`/form?rankId=${encodeURIComponent(rankId)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Failed to fetch form steps");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Update form text from JSON response
+                        formName.innerHTML = data.name ?? "";
+                        formDescription.innerHTML = data.description ?? "";
+                        // formVideoLink.innerHTML = data.videoLink ?? "";
+                        formSteps.innerText = data.steps ?? "";
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        formName.innerHTML = "Unable to load form name.";
+                        formDescription.innerHTML = "Unable to load form description.";
+                        // formVideoLink.innerHTML = "";
+                        formSteps.innerText = "Unable to load form steps.";
+                    });
+            });
+        });
+    </script>
 
 {{ end }}

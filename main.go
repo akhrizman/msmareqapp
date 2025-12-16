@@ -44,6 +44,7 @@ func main() {
 
 	// RestAPI Endpoints
 	auth.HandleFunc("/rank", RankGet).Methods("GET")
+	auth.HandleFunc("/form", FormGet).Methods("GET")
 
 	// static (if you want to serve local css/js)
 	// r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))

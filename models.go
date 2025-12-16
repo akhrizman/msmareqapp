@@ -6,11 +6,11 @@ import (
 )
 
 type Form struct {
-	ID          int
-	Name        string
-	Description string
-	Steps       string
-	VideoLink   string
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Steps       string `json:"steps"`
+	VideoLink   string `json:"videoLink"`
 }
 
 type StudentRank struct {
@@ -123,6 +123,15 @@ func GetRankByID(id int) (*StudentRank, error) {
 func GetFormByID(id int) (*Form, error) {
 	f := &Form{}
 	err := db.QueryRow(`SELECT id, name, description, steps, video_link FROM form WHERE id = ?`, id).Scan(&f.ID, &f.Name, &f.Description, &f.Steps, &f.VideoLink)
+	if err != nil {
+		return nil, err
+	}
+	return f, nil
+}
+
+func GetFormByRankID(id int) (*Form, error) {
+	f := &Form{}
+	err := db.QueryRow(`SELECT form.id, form.name, form.description, form.steps, form.video_link from student_rank INNER JOIN form on form.id = student_rank.form_id WHERE student_rank.id = ?`, id).Scan(&f.ID, &f.Name, &f.Description, &f.Steps, &f.VideoLink)
 	if err != nil {
 		return nil, err
 	}

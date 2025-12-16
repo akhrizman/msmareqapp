@@ -279,6 +279,42 @@ func RankGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// FormGet Form API to retrieve form by rankId
+func FormGet(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	idParam := r.URL.Query().Get("rankId")
+	if idParam == "" {
+		http.Error(w, "Missing rankId parameter", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		http.Error(w, "Invalid rankId parameter", http.StatusBadRequest)
+		return
+	}
+
+	form, err := GetFormByRankID(id)
+	if err == sql.ErrNoRows {
+		http.Error(w, "Form not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(form)
+	if err != nil {
+		log.Printf("Error encoding form: %v", err)
+	}
+}
+
 func AddUserPageHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := CurrentUser(r)
 	ranks, _ := GetAllRanks()

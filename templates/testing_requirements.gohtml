@@ -15,18 +15,11 @@
 
     <hr>
     <h4>Requirements</h4>
-    <p id="requirementText">{{.Req}}</p>
+    <pre id="requirementText">{{.Req}}</pre>
 
     {{template "layout_bottom" .}}
 
     <script>
-        // document.addEventListener("DOMContentLoaded", function () {
-        //     addRankRequirementChangeListener();
-        // });
-        //
-        // addRankRequirementChangeListener()
-
-
         document.addEventListener("DOMContentLoaded", function () {
             const rankSelect = document.getElementById("rank");
             const requirementText = document.getElementById("requirementText");
