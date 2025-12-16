@@ -47,7 +47,7 @@ func main() {
 	auth.HandleFunc("/form", FormGet).Methods("GET")
 
 	// static (if you want to serve local css/js)
-	// r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
 	log.Println("Starting server at :8080")
 	err := http.ListenAndServe(":8080", r)
