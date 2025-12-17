@@ -41,6 +41,7 @@ func main() {
 
 	admin.HandleFunc("/manage-users", ManageUsersPageHandler).Methods("GET")
 	admin.HandleFunc("/manage-users", ManageUsersFormHandler).Methods("POST")
+	admin.HandleFunc("/user", UserGetHandler).Methods("GET")
 
 	// RestAPI Endpoints
 	auth.HandleFunc("/rank", RankGet).Methods("GET")

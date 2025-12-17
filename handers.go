@@ -248,120 +248,11 @@ func FormsPageHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// RankGet Rank API to retrieve requirements
-func RankGet(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	idParam := r.URL.Query().Get("id")
-	if idParam == "" {
-		http.Error(w, "Missing id parameter", http.StatusBadRequest)
-		return
-	}
-
-	id, err := strconv.Atoi(idParam)
-	if err != nil {
-		http.Error(w, "Invalid id parameter", http.StatusBadRequest)
-		return
-	}
-
-	rank, err := GetRankByID(id)
-	if err == sql.ErrNoRows {
-		http.Error(w, "Rank not found", http.StatusNotFound)
-		return
-	}
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(rank)
-	if err != nil {
-		log.Printf("Error encoding rank: %v", err)
-	}
-}
-
-// FormGet Form API to retrieve form by rankId
-func FormGet(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	idParam := r.URL.Query().Get("rankId")
-	if idParam == "" {
-		http.Error(w, "Missing rankId parameter", http.StatusBadRequest)
-		return
-	}
-
-	id, err := strconv.Atoi(idParam)
-	if err != nil {
-		http.Error(w, "Invalid rankId parameter", http.StatusBadRequest)
-		return
-	}
-
-	form, err := GetFormByRankID(id)
-	if err == sql.ErrNoRows {
-		http.Error(w, "Form not found", http.StatusNotFound)
-		return
-	}
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(form)
-	if err != nil {
-		log.Printf("Error encoding form: %v", err)
-	}
-}
-
 func AddUserPageHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := CurrentUser(r)
 	ranks, _ := GetAllRanks()
 	render(w, "add_user", map[string]interface{}{"User": u, "Ranks": ranks})
 }
-
-//func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
-//	u, _ := CurrentUser(r)
-//	err := r.ParseForm()
-//	if err != nil {
-//		log.Printf("Error parsing Add User form: %v", err)
-//	}
-//	first := r.FormValue("first_name")
-//	last := r.FormValue("last_name")
-//	username := GenerateValidUsername(first + "." + last)
-//	rankID, _ := strconv.Atoi(r.FormValue("rank_id"))
-//	allow := parseBoolFromForm(r, "allow_full_access")
-//	if username == "" || first == "" || last == "" {
-//		ranks, _ := GetAllRanks()
-//		render(w, "add_user", map[string]interface{}{"User": u, "Ranks": ranks, "Error": "missing fields"})
-//		return
-//	}
-//	newUser := &User{
-//		Username:        username,
-//		FirstName:       first,
-//		LastName:        last,
-//		IsAdmin:         false,
-//		IsActive:        true,
-//		AllowFullAccess: allow,
-//		StudentRankID:   sqlNullInt(rankID),
-//	}
-//	// default password = FirstLastMSMA$123 and force password change
-//	defaultPwd := first + last + "MSMA$123"
-//	hashed, _ := HashPassword(defaultPwd)
-//	if err := CreateUser(newUser, hashed); err != nil {
-//		ranks, _ := GetAllRanks()
-//		render(w, "add_users", map[string]interface{}{"User": u, "Ranks": ranks, "Error": "could not create user: " + err.Error()})
-//		return
-//	}
-//	ranks, _ := GetAllRanks()
-//	render(w, "manage_users", map[string]interface{}{"User": u, "Ranks": ranks, "Success": fmt.Sprintf("User %s created with default password: %s", username, defaultPwd)})
-//}
 
 func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -438,13 +329,6 @@ func GenerateValidUsername(potentialUsername string) string {
 	return potentialUsername
 }
 
-//func ManageUsersPageHandler(w http.ResponseWriter, r *http.Request) {
-//	u, _ := CurrentUser(r)
-//	users, _ := GetAllUsersExcept(u.Username)
-//	ranks, _ := GetAllRanks()
-//	render(w, "manage_users", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks})
-//}
-
 func ManageUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := CurrentUser(r)
 	users, _ := GetAllUsersExcept(u.Username)
@@ -519,4 +403,114 @@ func sqlNullInt(v int) (ni sql.NullInt64) {
 	ni.Valid = true
 	ni.Int64 = int64(v)
 	return
+}
+
+// RestAPIs
+
+// RankGet Rank API to retrieve requirements
+func RankGet(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	idParam := r.URL.Query().Get("id")
+	if idParam == "" {
+		http.Error(w, "Missing id parameter", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		http.Error(w, "Invalid id parameter", http.StatusBadRequest)
+		return
+	}
+
+	rank, err := GetRankByID(id)
+	if err == sql.ErrNoRows {
+		http.Error(w, "Rank not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(rank)
+	if err != nil {
+		log.Printf("Error encoding rank: %v", err)
+	}
+}
+
+// FormGet Form API to retrieve form by rankId
+func FormGet(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	idParam := r.URL.Query().Get("rankId")
+	if idParam == "" {
+		http.Error(w, "Missing rankId parameter", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		http.Error(w, "Invalid rankId parameter", http.StatusBadRequest)
+		return
+	}
+
+	form, err := GetFormByRankID(id)
+	if err == sql.ErrNoRows {
+		http.Error(w, "Form not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(form)
+	if err != nil {
+		log.Printf("Error encoding form: %v", err)
+	}
+}
+
+// UserGetHandler UserDTO API to get the user details without password
+func UserGetHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	username := r.URL.Query().Get("username")
+	if username == "" {
+		http.Error(w, "Missing username", http.StatusBadRequest)
+		return
+	}
+
+	user, err := GetUserByUsername(username)
+	if err != nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	dto := UserDTO{
+		Username:        user.Username,
+		FirstName:       user.FirstName,
+		LastName:        user.LastName,
+		IsAdmin:         user.IsAdmin,
+		IsActive:        user.IsActive,
+		AllowFullAccess: user.AllowFullAccess,
+	}
+
+	if user.StudentRankID.Valid {
+		dto.StudentRankID = int(user.StudentRankID.Int64)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(dto)
 }

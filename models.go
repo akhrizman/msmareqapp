@@ -34,6 +34,16 @@ type User struct {
 	ForcePasswordChange bool
 }
 
+type UserDTO struct {
+	Username        string `json:"username"`
+	FirstName       string `json:"first_name"`
+	LastName        string `json:"last_name"`
+	IsAdmin         bool   `json:"is_admin"`
+	IsActive        bool   `json:"is_active"`
+	AllowFullAccess bool   `json:"allow_full_access"`
+	StudentRankID   int    `json:"student_rank_id"`
+}
+
 // Queries
 
 func GetUserByUsername(username string) (*User, error) {

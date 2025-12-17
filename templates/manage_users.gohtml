@@ -6,7 +6,7 @@
     <form method="post" action="/admin/manage-users">
         <div class="mb-3">
 {{/*            <label>Select User</label>*/}}
-            <input placeholder="Search Student..." list="userlist" name="selected_username" class="form-control" required>
+            <input id="userInput" placeholder="Search Student..." list="userlist" name="selected_username" class="form-control" required>
             <datalist id="userlist">
                 {{range .Users}}
                     <option value="{{.Username}}">{{.FirstName}} {{.LastName}}</option>
@@ -16,11 +16,11 @@
 
         <div class="mb-3">
             <label>First Name</label>
-            <input name="first_name" class="form-control">
+            <input id="first_name"name="first_name" class="form-control">
         </div>
         <div class="mb-3">
             <label>Last Name</label>
-            <input name="last_name" class="form-control">
+            <input id="last_name"name="last_name" class="form-control">
         </div>
 
         <div class="form-check">
@@ -38,7 +38,7 @@
 
         <div class="mb-3 mt-2">
             <label>Rank</label>
-            <select name="rank_id" class="form-select">
+            <select id="rank_id" name="rank_id" class="form-select">
                 <option value="0">-- none --</option>
                 {{range .Ranks}}
                     <option value="{{.ID}}">{{.Name}}</option>
@@ -55,5 +55,45 @@
     </form>
 
     {{template "layout_bottom" .}}
+
+    <script>
+        const userInput = document.getElementById("userInput");
+
+        userInput.addEventListener("input", function () {
+            const username = this.value.trim();
+            if (!username) {
+                return;
+            }
+
+            fetch(`/admin/user?username=${encodeURIComponent(username)}`)
+                .then(resp => {
+                    if (!resp.ok) {
+                        throw new Error("User not found");
+                    }
+                    return resp.json();
+                })
+                .then(user => {
+                    document.getElementById("first_name").value = user.first_name || "";
+                    document.getElementById("last_name").value = user.last_name || "";
+
+                    document.getElementById("is_admin").checked = user.is_admin;
+                    document.getElementById("is_active").checked = user.is_active;
+                    document.getElementById("allow_full_access").checked = user.allow_full_access;
+
+                    const rankSelect = document.getElementById("rank_id");
+                    if (user.student_rank_id && rankSelect) {
+                        rankSelect.value = user.student_rank_id;
+                    } else {
+                        rankSelect.value = "0";
+                    }
+
+                    // Never auto-check reset password
+                    document.getElementById("reset_password").checked = false;
+                })
+                .catch(() => {
+                    // User typed something not in the list — ignore silently
+                });
+        });
+    </script>
 
 {{ end }}
