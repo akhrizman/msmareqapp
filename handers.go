@@ -7,9 +7,13 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"net/url"
 	"regexp"
 	"strconv"
 )
+
+// Regex for username enumeration
+var trailingNumberRegex = regexp.MustCompile(`^(.*?)(\d+)$`)
 
 var templateFuncs = template.FuncMap{
 	"dict": func(values ...interface{}) (map[string]interface{}, error) {
@@ -322,23 +326,72 @@ func AddUserPageHandler(w http.ResponseWriter, r *http.Request) {
 	render(w, "add_user", map[string]interface{}{"User": u, "Ranks": ranks})
 }
 
+//func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
+//	u, _ := CurrentUser(r)
+//	err := r.ParseForm()
+//	if err != nil {
+//		log.Printf("Error parsing Add User form: %v", err)
+//	}
+//	first := r.FormValue("first_name")
+//	last := r.FormValue("last_name")
+//	username := GenerateValidUsername(first + "." + last)
+//	rankID, _ := strconv.Atoi(r.FormValue("rank_id"))
+//	allow := parseBoolFromForm(r, "allow_full_access")
+//	if username == "" || first == "" || last == "" {
+//		ranks, _ := GetAllRanks()
+//		render(w, "add_user", map[string]interface{}{"User": u, "Ranks": ranks, "Error": "missing fields"})
+//		return
+//	}
+//	newUser := &User{
+//		Username:        username,
+//		FirstName:       first,
+//		LastName:        last,
+//		IsAdmin:         false,
+//		IsActive:        true,
+//		AllowFullAccess: allow,
+//		StudentRankID:   sqlNullInt(rankID),
+//	}
+//	// default password = FirstLastMSMA$123 and force password change
+//	defaultPwd := first + last + "MSMA$123"
+//	hashed, _ := HashPassword(defaultPwd)
+//	if err := CreateUser(newUser, hashed); err != nil {
+//		ranks, _ := GetAllRanks()
+//		render(w, "add_users", map[string]interface{}{"User": u, "Ranks": ranks, "Error": "could not create user: " + err.Error()})
+//		return
+//	}
+//	ranks, _ := GetAllRanks()
+//	render(w, "manage_users", map[string]interface{}{"User": u, "Ranks": ranks, "Success": fmt.Sprintf("User %s created with default password: %s", username, defaultPwd)})
+//}
+
 func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Redirect(w, r, "/admin/manage-users", http.StatusSeeOther)
+		return
+	}
+
 	u, _ := CurrentUser(r)
+
 	err := r.ParseForm()
 	if err != nil {
 		log.Printf("Error parsing Add User form: %v", err)
 	}
+
 	first := r.FormValue("first_name")
 	last := r.FormValue("last_name")
 	username := GenerateValidUsername(first + "." + last)
-	fmt.Println(username)
 	rankID, _ := strconv.Atoi(r.FormValue("rank_id"))
 	allow := parseBoolFromForm(r, "allow_full_access")
+
 	if username == "" || first == "" || last == "" {
 		ranks, _ := GetAllRanks()
-		render(w, "add_user", map[string]interface{}{"User": u, "Ranks": ranks, "Error": "missing fields"})
+		render(w, "add_user", map[string]interface{}{
+			"User":  u,
+			"Ranks": ranks,
+			"Error": "missing fields",
+		})
 		return
 	}
+
 	newUser := &User{
 		Username:        username,
 		FirstName:       first,
@@ -348,25 +401,28 @@ func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
 		AllowFullAccess: allow,
 		StudentRankID:   sqlNullInt(rankID),
 	}
-	// default password = FirstLastMSMA$123 and force password change
+
 	defaultPwd := first + last + "MSMA$123"
 	hashed, _ := HashPassword(defaultPwd)
+
 	if err := CreateUser(newUser, hashed); err != nil {
 		ranks, _ := GetAllRanks()
-		render(w, "add_user", map[string]interface{}{"User": u, "Ranks": ranks, "Error": "could not create user: " + err.Error()})
+		render(w, "add_user", map[string]interface{}{
+			"User":  u,
+			"Ranks": ranks,
+			"Error": "could not create user: " + err.Error(),
+		})
 		return
 	}
-	ranks, _ := GetAllRanks()
-	render(w, "add_user", map[string]interface{}{"User": u, "Ranks": ranks, "Success": fmt.Sprintf("User created with default password: %s", defaultPwd)})
-}
 
-var trailingNumberRegex = regexp.MustCompile(`^(.*?)(\d+)$`)
+	// Redirect after successful POST
+	http.Redirect(w, r, "/admin/manage-users?created_user="+url.QueryEscape(username)+
+		"&created_password="+url.QueryEscape(defaultPwd), http.StatusSeeOther)
+}
 
 func GenerateValidUsername(potentialUsername string) string {
 	user, _ := GetUserByUsername(potentialUsername)
 	if user != nil {
-		fmt.Println("existingUser:", user.Username)
-
 		base := potentialUsername
 		num := 1
 
@@ -377,19 +433,41 @@ func GenerateValidUsername(potentialUsername string) string {
 		}
 
 		incrementedUsername := fmt.Sprintf("%s%d", base, num)
-		fmt.Println("incrementedUsername:", incrementedUsername)
-
 		return GenerateValidUsername(incrementedUsername)
 	}
-
 	return potentialUsername
 }
+
+//func ManageUsersPageHandler(w http.ResponseWriter, r *http.Request) {
+//	u, _ := CurrentUser(r)
+//	users, _ := GetAllUsersExcept(u.Username)
+//	ranks, _ := GetAllRanks()
+//	render(w, "manage_users", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks})
+//}
 
 func ManageUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := CurrentUser(r)
 	users, _ := GetAllUsersExcept(u.Username)
 	ranks, _ := GetAllRanks()
-	render(w, "manage_users", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks})
+
+	data := map[string]interface{}{
+		"User":  u,
+		"Users": users,
+		"Ranks": ranks,
+	}
+
+	createdUser := r.URL.Query().Get("created_user")
+	createdPwd := r.URL.Query().Get("created_password")
+
+	if createdUser != "" && createdPwd != "" {
+		data["Success"] = fmt.Sprintf(
+			"User %s created successfully. Temporary password: %s",
+			createdUser,
+			createdPwd,
+		)
+	}
+
+	render(w, "manage_users", data)
 }
 
 func ManageUsersFormHandler(w http.ResponseWriter, r *http.Request) {
