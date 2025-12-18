@@ -28,9 +28,7 @@ Proper Protocol
 5. Proper sitting position (Feet crossed in front with back straight).
 6. Proper kneeling position (Feet behind you and flat on the ground. Hands on thighs).
 7. How to tie the belt.', 1);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (3, '11th Gup', 'Senior White Belt (2 yellow stripes)', '11th Gup - WHITE BELT WITH TWO YELLOW STRIPES
-
-GENERAL REQUIREMENTS
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (3, '11th Gup', 'Senior White Belt (2 yellow stripes)', 'GENERAL REQUIREMENTS
 1. All requirements for 12th Gup.
 
 KNOWLEDGE
@@ -56,9 +54,7 @@ WARM UP
 1. Ten push-ups
 2. Ten deep knee bends
 3. Six hip stretches', 1);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (4, '10th Gup', 'Yellow Belt', '10th Gup - Yellow belt
-
-GENERAL REQUIREMENTS
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (4, '10th Gup', 'Yellow Belt', 'GENERAL REQUIREMENTS
 1. All requirements for 12th and 11th Gups.
 
 KNOWLEDGE
@@ -91,7 +87,6 @@ INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id
 
 KNOWLEDGE
 1. Define Self-discipline (Student\'s concept on subject)
-
 2. Define Karate and Martial (Student\'s concept on subject)
 3. Student will be able to explain the basic hand and fist positions and striking areas for the punch, chop, back fist and bottom fist.
 
@@ -104,8 +99,8 @@ HAND TECHNIQUES
 
 LEG TECHNIQUES
 1. Back Kicks
-A. Spinning Back Kick with high chamber (demonstrated on the wall)
-B. Stepping Back Kick (stepping behind from the ground)
+	A. Spinning Back Kick with high chamber (demonstrated on the wall)
+	B. Stepping Back Kick (stepping behind from the ground)
 
 FORM
 1. Gicho Hyung IL Bu (Basic Form Number 1)
@@ -176,10 +171,10 @@ ONE STEP PUNCHING
 	E. Round kick to mid-section with rear leg
 	F. Sweep opponent\'s front leg
 2. Right middle and left middle
-A. Step to the inside into a straddle-leg stance
-B. Knife hand block
-C. Inside chop to neck
-D. Inverted punch (full hip)
+	A. Step to the inside into a straddle-leg stance
+	B. Knife hand block
+	C. Inside chop to neck
+	D. Inverted punch (full hip)
 
 FORM
 1. Gicho Hyung Sahm Bu (Basic Form Number 3)
