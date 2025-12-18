@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 // Regex for username enumeration
@@ -102,12 +103,12 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 // ChangePasswordPageHandler Shows change password form on first login
 func ChangePasswordPageHandler(w http.ResponseWriter, r *http.Request) {
-	u, _ := CurrentUser(r)
-	render(w, "change_password", map[string]interface{}{"User": u})
+	user, _ := CurrentUser(r)
+	render(w, "change_password", map[string]interface{}{"User": user})
 }
 
 func ChangePasswordHandler(w http.ResponseWriter, r *http.Request) {
-	u, _ := CurrentUser(r)
+	user, _ := CurrentUser(r)
 	err := r.ParseForm()
 	if err != nil {
 		log.Printf("Error parsing Change Password form: %v", err)
@@ -115,72 +116,72 @@ func ChangePasswordHandler(w http.ResponseWriter, r *http.Request) {
 	pw := r.FormValue("password")
 	pw2 := r.FormValue("password2")
 	if pw != pw2 {
-		render(w, "change_password", map[string]interface{}{"User": u, "Error": "passwords do not match"})
+		render(w, "change_password", map[string]interface{}{"User": user, "Error": "passwords do not match"})
 		return
 	}
 	if err := ValidatePasswordPolicy(pw); err != nil {
-		render(w, "change_password", map[string]interface{}{"User": u, "Error": err.Error()})
+		render(w, "change_password", map[string]interface{}{"User": user, "Error": err.Error()})
 		return
 	}
 	hash, err := HashPassword(pw)
 	if err != nil {
-		render(w, "change_password", map[string]interface{}{"User": u, "Error": "server error"})
+		render(w, "change_password", map[string]interface{}{"User": user, "Error": "server error"})
 		return
 	}
-	if err := UpdateUserPassword(u.Username, hash, false); err != nil {
-		render(w, "change_password", map[string]interface{}{"User": u, "Error": "server error"})
+	if err := UpdateUserPassword(user.Username, hash, false); err != nil {
+		render(w, "change_password", map[string]interface{}{"User": user, "Error": "server error"})
 		return
 	}
 	http.Redirect(w, r, "/testing", http.StatusSeeOther)
 }
 
 func ProfilePageHandler(w http.ResponseWriter, r *http.Request) {
-	u, _ := CurrentUser(r)
-	render(w, "profile", map[string]interface{}{"User": u})
+	user, _ := CurrentUser(r)
+	render(w, "profile", map[string]interface{}{"User": user})
 }
 
 func ProfileUpdateFormHandler(w http.ResponseWriter, r *http.Request) {
-	u, _ := CurrentUser(r)
+	user, _ := CurrentUser(r)
 	err := r.ParseForm()
 	if err != nil {
 		log.Printf("Error parsing Profile Update form: %v", err)
 	}
-	fn := r.FormValue("first_name")
-	ln := r.FormValue("last_name")
-	if fn == "" || ln == "" {
-		render(w, "profile", map[string]interface{}{"User": u, "Error": "first and last required"})
+	firstName := strings.TrimSpace(r.FormValue("first_name"))
+	lastName := strings.TrimSpace(r.FormValue("last_name"))
+	if firstName == "" || lastName == "" {
+		render(w, "profile", map[string]interface{}{"User": user, "Error": "first and last required"})
 		return
 	}
-	u.FirstName = fn
-	u.LastName = ln
-	if err := UpdateUserProfile(u); err != nil {
-		render(w, "profile", map[string]interface{}{"User": u, "Error": "server error"})
+	user.FirstName = firstName
+	user.LastName = lastName
+	if err := UpdateUserProfile(user); err != nil {
+		render(w, "profile", map[string]interface{}{"User": user, "Error": "server error"})
 		return
 	}
 	// handle password change optional
 	newpw := r.FormValue("new_password")
 	if newpw != "" {
 		if err := ValidatePasswordPolicy(newpw); err != nil {
-			render(w, "profile", map[string]interface{}{"User": u, "Error": err.Error()})
+			render(w, "profile", map[string]interface{}{"User": user, "Error": err.Error()})
 			return
 		}
 		hash, _ := HashPassword(newpw)
-		if err := UpdateUserPassword(u.Username, hash, false); err != nil {
-			render(w, "profile", map[string]interface{}{"User": u, "Error": "server error"})
+		if err := UpdateUserPassword(user.Username, hash, false); err != nil {
+			render(w, "profile", map[string]interface{}{"User": user, "Error": "server error"})
 			return
 		}
 	}
-	render(w, "profile", map[string]interface{}{"User": u, "Success": "Profile updated"})
+	render(w, "profile", map[string]interface{}{"User": user, "Success": "Profile updated"})
 }
 
 // TestingRequirementsPageHandler - Loads the next rank's Testing Requirements
 func TestingRequirementsPageHandler(w http.ResponseWriter, r *http.Request) {
-	u, _ := CurrentUser(r)
+	user, _ := CurrentUser(r)
 	allRanks, _ := GetAllTestableRanks()
-	nextID, _ := nextRankIDForUser(u)
+	nextID, _ := nextRankIDForUser(user)
 	// Build dropdown depending on allow_full_access
 	var dropdown []StudentRank
-	if u.AllowFullAccess {
+	if user.AllowFullAccess {
 		dropdown = allRanks
 	} else {
 		for _, rr := range allRanks {
@@ -203,7 +204,7 @@ func TestingRequirementsPageHandler(w http.ResponseWriter, r *http.Request) {
 		reqText = selected.Requirements
 	}
 	render(w, "testing_requirements", map[string]interface{}{
-		"User":     u,
+		"User":     user,
 		"Dropdown": dropdown,
 		"Selected": selected,
 		"Req":      reqText,
@@ -212,12 +213,12 @@ func TestingRequirementsPageHandler(w http.ResponseWriter, r *http.Request) {
 
 // FormsPageHandler - Loads the next rank's form requirement
 func FormsPageHandler(w http.ResponseWriter, r *http.Request) {
-	u, _ := CurrentUser(r)
+	user, _ := CurrentUser(r)
 	allRanks, _ := GetAllTestableRanks()
-	nextID, _ := nextRankIDForUser(u)
+	nextID, _ := nextRankIDForUser(user)
 
 	var ranksToShow []StudentRank
-	if u.AllowFullAccess {
+	if user.AllowFullAccess {
 		ranksToShow = allRanks
 	} else {
 		for _, rr := range allRanks {
@@ -241,7 +242,7 @@ func FormsPageHandler(w http.ResponseWriter, r *http.Request) {
 		form, _ = GetFormByID(formID)
 	}
 	render(w, "forms", map[string]interface{}{
-		"User":     u,
+		"User":     user,
 		"Ranks":    ranksToShow,
 		"Selected": selected,
 		"Form":     form,
@@ -249,9 +250,9 @@ func FormsPageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddUserPageHandler(w http.ResponseWriter, r *http.Request) {
-	u, _ := CurrentUser(r)
+	user, _ := CurrentUser(r)
 	ranks, _ := GetAllRanks()
-	render(w, "add_user", map[string]interface{}{"User": u, "Ranks": ranks})
+	render(w, "add_user", map[string]interface{}{"User": user, "Ranks": ranks})
 }
 
 func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
@@ -260,23 +261,36 @@ func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, _ := CurrentUser(r)
+	user, _ := CurrentUser(r)
 
 	err := r.ParseForm()
 	if err != nil {
 		log.Printf("Error parsing Add User form: %v", err)
 	}
 
-	first := r.FormValue("first_name")
-	last := r.FormValue("last_name")
-	username := GenerateValidUsername(first + "." + last)
+	first := strings.TrimSpace(r.FormValue("first_name"))
+	last := strings.TrimSpace(r.FormValue("last_name"))
+
+	if first == "" || last == "" {
+		ranks, _ := GetAllRanks()
+		render(w, "add_user", map[string]interface{}{
+			"User":  user,
+			"Ranks": ranks,
+			"Error": "missing fields",
+		})
+		return
+	}
+
+	baseUsername := strings.ToLower(first + "." + last)
+	username := GenerateValidUsername(baseUsername)
+
 	rankID, _ := strconv.Atoi(r.FormValue("rank_id"))
 	allow := parseBoolFromForm(r, "allow_full_access")
 
 	if username == "" || first == "" || last == "" {
 		ranks, _ := GetAllRanks()
 		render(w, "add_user", map[string]interface{}{
-			"User":  u,
+			"User":  user,
 			"Ranks": ranks,
 			"Error": "missing fields",
 		})
@@ -299,7 +313,7 @@ func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	if err := CreateUser(newUser, hashed); err != nil {
 		ranks, _ := GetAllRanks()
 		render(w, "add_user", map[string]interface{}{
-			"User":  u,
+			"User":  user,
 			"Ranks": ranks,
 			"Error": "could not create user: " + err.Error(),
 		})
@@ -323,19 +337,19 @@ func GenerateValidUsername(potentialUsername string) string {
 			num = n + 1
 		}
 
-		incrementedUsername := fmt.Sprintf("%s%d", base, num)
-		return GenerateValidUsername(incrementedUsername)
+		// return incremented username
+		return GenerateValidUsername(fmt.Sprintf("%s%d", base, num))
 	}
 	return potentialUsername
 }
 
 func ManageUsersPageHandler(w http.ResponseWriter, r *http.Request) {
-	u, _ := CurrentUser(r)
-	users, _ := GetAllUsersExcept(u.Username)
+	user, _ := CurrentUser(r)
+	users, _ := GetAllUsersExcept(user.Username)
 	ranks, _ := GetAllRanks()
 
 	data := map[string]interface{}{
-		"User":  u,
+		"User":  user,
 		"Users": users,
 		"Ranks": ranks,
 	}
@@ -355,7 +369,7 @@ func ManageUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ManageUsersFormHandler(w http.ResponseWriter, r *http.Request) {
-	u, _ := CurrentUser(r)
+	user, _ := CurrentUser(r)
 	err := r.ParseForm()
 	if err != nil {
 		log.Printf("Error parsing Manage User form: %v", err)
@@ -364,29 +378,29 @@ func ManageUsersFormHandler(w http.ResponseWriter, r *http.Request) {
 	// load the user
 	targetUser, err := GetUserByUsername(target)
 	if err != nil {
-		users, _ := GetAllUsersExcept(u.Username)
+		users, _ := GetAllUsersExcept(user.Username)
 		ranks, _ := GetAllRanks()
-		render(w, "manage_users", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks, "Error": "cannot find user"})
+		render(w, "manage_users", map[string]interface{}{"User": user, "Users": users, "Ranks": ranks, "Error": "cannot find user"})
 		return
 	}
 	// update fields
-	targetUser.FirstName = r.FormValue("first_name")
-	targetUser.LastName = r.FormValue("last_name")
+	targetUser.FirstName = strings.TrimSpace(r.FormValue("first_name"))
+	targetUser.LastName = strings.TrimSpace(r.FormValue("last_name"))
 	targetUser.IsAdmin = parseBoolFromForm(r, "is_admin")
 	targetUser.IsActive = parseBoolFromForm(r, "is_active")
 	targetUser.AllowFullAccess = parseBoolFromForm(r, "allow_full_access")
 	rankID, _ := strconv.Atoi(r.FormValue("rank_id"))
 	targetUser.StudentRankID = sqlNullInt(rankID)
 	if err := UpdateUserAdminDetails(targetUser); err != nil {
-		users, _ := GetAllUsersExcept(u.Username)
+		users, _ := GetAllUsersExcept(user.Username)
 		ranks, _ := GetAllRanks()
-		render(w, "manage_users", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks, "Error": "update failed"})
+		render(w, "manage_users", map[string]interface{}{"User": user, "Users": users, "Ranks": ranks, "Error": "update failed"})
 		return
 	}
 
-	users, _ := GetAllUsersExcept(u.Username)
+	users, _ := GetAllUsersExcept(user.Username)
 	ranks, _ := GetAllRanks()
-	render(w, "manage_users", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks, "Success": targetUser.Username + " Updated"})
+	render(w, "manage_users", map[string]interface{}{"User": user, "Users": users, "Ranks": ranks, "Success": targetUser.Username + " Updated"})
 }
 
 // small helper
