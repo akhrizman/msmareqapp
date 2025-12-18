@@ -223,7 +223,7 @@ func ResetUserPasswordToDefault(username, firstName, lastName string) (string, e
 	if username == "" {
 		return "", errors.New("username empty")
 	}
-	newPwd := firstName + lastName + "MSMA$123"
+	newPwd := firstName + lastName + Config.DefaultPasswordSuffix
 	hashed, err := HashPassword(newPwd)
 	if err != nil {
 		return "", err

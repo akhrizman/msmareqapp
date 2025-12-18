@@ -5,9 +5,16 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// Load .env file if present
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, relying on environment variables")
+	}
+	LoadConfig()
+
 	initDB()
 	initSessionStore()
 

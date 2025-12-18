@@ -307,7 +307,7 @@ func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
 		StudentRankID:   sqlNullInt(rankID),
 	}
 
-	defaultPwd := first + last + "MSMA$123"
+	defaultPwd := first + last + Config.DefaultPasswordSuffix
 	hashed, _ := HashPassword(defaultPwd)
 
 	if err := CreateUser(newUser, hashed); err != nil {
@@ -359,7 +359,7 @@ func ManageUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	if createdUser != "" && createdPwd != "" {
 		data["Success"] = fmt.Sprintf(
-			"User %s created successfully. Temporary password: %s",
+			"User %s created successfully.  Temporary password: %s",
 			createdUser,
 			createdPwd,
 		)
