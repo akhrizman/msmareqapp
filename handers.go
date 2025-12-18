@@ -391,7 +391,7 @@ func ManageUsersFormHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	users, _ := GetAllUsersExcept(u.Username)
 	ranks, _ := GetAllRanks()
-	render(w, "manage_users", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks, "Success": "Updated"})
+	render(w, "manage_users", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks, "Success": targetUser.Username + " Updated"})
 }
 
 // small helper
