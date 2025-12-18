@@ -1,6 +1,8 @@
 {{ define "add_user" }}
     {{template "layout_top" .}}
 
+    <link href="/static/app.css" rel="stylesheet" type="text/css">
+
     <h2>Add User</h2>
     <form method="post" action="/admin/add-user">
         <div class="mb-3">
@@ -24,10 +26,15 @@
                 {{end}}
             </select>
         </div>
-        <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" id="allow_full_access" name="allow_full_access">
-            <label class="form-check-label">Allow Access to All Requirements & Forms</label>
+
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <label class="toggle-switch">
+                <input type="checkbox" id="allow_full_access" name="allow_full_access">
+                <span class="toggle-slider"></span>
+            </label>
+            <label class="me-2">Allow Access to All Requirements</label>
         </div>
+
         <button class="btn btn-primary">Add User</button>
     </form>
 

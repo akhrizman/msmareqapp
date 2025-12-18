@@ -55,24 +55,33 @@
             </select>
         </div>
 
-        <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" id="reset_password" name="reset_password">
-            <label class="form-check-label">Reset password to default</label>
-        </div>
-
         <button class="btn btn-primary">Update</button>
     </form>
+
+    <hr>
+
+    <button id="resetPasswordBtn" class="btn btn-danger" type="button" disabled> Reset Password</button>
+
+    <div id="resetResult" class="mt-2"></div>
+
 
     {{template "layout_bottom" .}}
 
     <script>
         const userInput = document.getElementById("userInput");
+        const resetBtn = document.getElementById("resetPasswordBtn");
+        const resetResult = document.getElementById("resetResult");
+
+        let selectedUsername = "";
 
         userInput.addEventListener("input", function () {
             const username = this.value.trim();
             if (!username) {
+                resetBtn.disabled = true;
+                selectedUsername = "";
                 return;
             }
+
 
             fetch(`/admin/user?username=${encodeURIComponent(username)}`)
                 .then(resp => {
@@ -82,6 +91,9 @@
                     return resp.json();
                 })
                 .then(user => {
+                    selectedUsername = username;
+                    resetBtn.disabled = false;
+
                     document.getElementById("first_name").value = user.first_name || "";
                     document.getElementById("last_name").value = user.last_name || "";
 
@@ -90,17 +102,43 @@
                     document.getElementById("allow_full_access").checked = user.allow_full_access;
 
                     const rankSelect = document.getElementById("rank_id");
-                    if (user.student_rank_id && rankSelect) {
-                        rankSelect.value = user.student_rank_id;
-                    } else {
-                        rankSelect.value = "0";
-                    }
+                    rankSelect.value = user.student_rank_id || "0";
 
-                    // Never auto-check reset password
-                    document.getElementById("reset_password").checked = false;
+                    resetResult.innerHTML = "";
                 })
                 .catch(() => {
-                    // User typed something not in the list — ignore silently
+                    resetBtn.disabled = true;
+                    selectedUsername = "";
+                });
+        });
+
+        resetBtn.addEventListener("click", function () {
+            if (!selectedUsername) return;
+
+            const confirmed = confirm(
+                `Are you sure you want to reset ${selectedUsername}'s password?`
+            );
+            if (!confirmed) return;
+
+            fetch(`/admin/reset?username=${encodeURIComponent(selectedUsername)}`, {
+                method: "POST"
+            })
+                .then(resp => resp.json())
+                .then(data => {
+                    if (data.error) {
+                        resetResult.innerHTML =
+                            `<div class="alert alert-danger">${data.error}</div>`;
+                    } else {
+                        resetResult.innerHTML =
+                            `<div class="alert alert-success">
+                        Password reset successfully.<br>
+                        <strong>New Password:</strong> ${data.password}
+                    </div>`;
+                    }
+                })
+                .catch(() => {
+                    resetResult.innerHTML =
+                        `<div class="alert alert-danger">Password reset failed</div>`;
                 });
         });
     </script>

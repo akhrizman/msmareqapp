@@ -41,13 +41,14 @@ func main() {
 
 	admin.HandleFunc("/manage-users", ManageUsersPageHandler).Methods("GET")
 	admin.HandleFunc("/manage-users", ManageUsersFormHandler).Methods("POST")
-	admin.HandleFunc("/user", UserGetHandler).Methods("GET")
 
 	// RestAPI Endpoints
+	admin.HandleFunc("/user", UserGetHandler).Methods("GET")
+	admin.HandleFunc("/reset", ResetUserPasswordHandler).Methods("POST")
 	auth.HandleFunc("/rank", RankGet).Methods("GET")
 	auth.HandleFunc("/form", FormGet).Methods("GET")
 
-	// static (if you want to serve local css/js)
+	// static (for local css/js)
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
 	log.Println("Starting server at :8080")

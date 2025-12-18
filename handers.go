@@ -383,12 +383,7 @@ func ManageUsersFormHandler(w http.ResponseWriter, r *http.Request) {
 		render(w, "manage_users", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks, "Error": "update failed"})
 		return
 	}
-	if r.FormValue("reset_password") == "on" {
-		_, err := ResetUserPasswordToDefault(targetUser.Username, targetUser.FirstName, targetUser.LastName)
-		if err != nil {
-			// ignore for now
-		}
-	}
+
 	users, _ := GetAllUsersExcept(u.Username)
 	ranks, _ := GetAllRanks()
 	render(w, "manage_users", map[string]interface{}{"User": u, "Users": users, "Ranks": ranks, "Success": targetUser.Username + " Updated"})
@@ -513,4 +508,35 @@ func UserGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(dto)
+}
+
+func ResetUserPasswordHandler(w http.ResponseWriter, r *http.Request) {
+	username := r.URL.Query().Get("username")
+	if username == "" {
+		http.Error(w, `{"error":"username required"}`, http.StatusBadRequest)
+		return
+	}
+
+	user, err := GetUserByUsername(username)
+	if err != nil {
+		http.Error(w, `{"error":"user not found"}`, http.StatusNotFound)
+		return
+	}
+
+	newPwd, err := ResetUserPasswordToDefault(
+		user.Username,
+		user.FirstName,
+		user.LastName,
+	)
+	if err != nil {
+		http.Error(w, `{"error":"reset failed"}`, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(fmt.Sprintf(
+		`{"password":"%s"}`,
+		newPwd,
+	)))
 }
