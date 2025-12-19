@@ -84,6 +84,13 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		render(w, "login", map[string]interface{}{"Error": "invalid credentials"})
 		return
 	}
+
+	// BLOCK INACTIVE USERS (mimic invalid password)
+	if !user.IsActive {
+		render(w, "login", map[string]interface{}{"Error": "invalid credentials"})
+		return
+	}
+
 	// login success
 	err = LoginUser(w, r, username)
 	if err != nil {
