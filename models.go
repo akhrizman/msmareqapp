@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"errors"
+	"strings"
 )
 
 type Form struct {
@@ -223,7 +224,7 @@ func ResetUserPasswordToDefault(username, firstName, lastName string) (string, e
 	if username == "" {
 		return "", errors.New("username empty")
 	}
-	newPwd := firstName + lastName + Config.DefaultPasswordSuffix
+	newPwd := strings.ToLower(lettersOnly(firstName+lastName)) + Config.DefaultPasswordSuffix
 	hashed, err := HashPassword(newPwd)
 	if err != nil {
 		return "", err

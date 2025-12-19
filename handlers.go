@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 // Regex for username enumeration
@@ -312,13 +313,13 @@ func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	baseUsername := strings.ToLower(first + "." + last)
+	baseUsername := strings.ToLower(lettersOnly(first) + "." + lettersOnly(last))
 	username := GenerateValidUsername(baseUsername)
 
 	rankID, _ := strconv.Atoi(r.FormValue("rank_id"))
 	allow := parseBoolFromForm(r, "allow_full_access")
 
-	if username == "" || first == "" || last == "" {
+	if username == "" {
 		ranks, _ := GetAllRanks()
 		render(w, "add_user", map[string]interface{}{
 			"User":  user,
@@ -338,7 +339,7 @@ func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
 		StudentRankID:   sqlNullInt(rankID),
 	}
 
-	defaultPwd := first + last + Config.DefaultPasswordSuffix
+	defaultPwd := strings.ToLower(lettersOnly(first+last)) + Config.DefaultPasswordSuffix
 	hashed, _ := HashPassword(defaultPwd)
 
 	if err := CreateUser(newUser, hashed); err != nil {
@@ -584,4 +585,14 @@ func ResetUserPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		`{"password":"%s"}`,
 		newPwd,
 	)))
+}
+
+func lettersOnly(s string) string {
+	var b strings.Builder
+	for _, r := range s {
+		if unicode.IsLetter(r) {
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
 }
