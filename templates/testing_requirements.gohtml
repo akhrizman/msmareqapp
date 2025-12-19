@@ -4,7 +4,7 @@
     <h2>Testing Requirements</h2>
     <form method="post" action="/testing">
         <div class="mb-3">
-            <label for="rank" class="form-label">My Next Belt: <em>{{.Selected.Name}}, {{.Selected.Description}}</em></label>
+            <label for="rank" class="form-label">My Next Rank: <em>{{.NextRank.Name}}, {{.NextRank.Description}}</em></label>
             <select class="form-select" id="rank" name="rank_id">
                 {{range .Dropdown}}
                     <option value="{{.ID}}" {{if $.Selected}}{{if eq $.Selected.ID .ID}}selected{{end}}{{end}}>{{.Name}}</option>

@@ -186,34 +186,48 @@ func TestingRequirementsPageHandler(w http.ResponseWriter, r *http.Request) {
 	user, _ := CurrentUser(r)
 	allRanks, _ := GetAllTestableRanks()
 	nextID, _ := nextRankIDForUser(user)
+
+	// Clamp selected rank to 16 if user's rank is greater than 16
+	selectedID := nextID
+	if user.StudentRankID.Valid && user.StudentRankID.Int64 > 16 {
+		selectedID = 16 // highest testable rank
+	}
+
 	// Build dropdown depending on allow_full_access
 	var dropdown []StudentRank
 	if user.AllowFullAccess {
 		dropdown = allRanks
 	} else {
 		for _, rr := range allRanks {
-			if rr.ID <= nextID {
+			if rr.ID <= selectedID {
 				dropdown = append(dropdown, rr)
 			}
 		}
 	}
-	// find selected rank (preset to rank with id == nextID if exists)
+
+	// find selected rank (preset to rank with id == nextID if exists) unless user's next rank is not testable
 	var selected *StudentRank
-	for _, rr := range dropdown {
-		if rr.ID == nextID {
-			tmp := rr
+
+	for _, rr := range allRanks {
+		tmp := rr
+		if rr.ID == selectedID {
 			selected = &tmp
 		}
 	}
+
 	// content below is requirements column of selected
 	reqText := ""
 	if selected != nil {
 		reqText = selected.Requirements
 	}
+
+	nextRank, _ := GetRankByID(nextID)
+
 	render(w, "testing_requirements", map[string]interface{}{
 		"User":     user,
 		"Dropdown": dropdown,
 		"Selected": selected,
+		"NextRank": nextRank, // actual next rank
 		"Req":      reqText,
 	})
 }
@@ -224,12 +238,18 @@ func FormsPageHandler(w http.ResponseWriter, r *http.Request) {
 	allRanks, _ := GetAllTestableRanks()
 	nextID, _ := nextRankIDForUser(user)
 
+	// Clamp selected rank to 16 if user's rank is greater than 16
+	selectedID := nextID
+	if user.StudentRankID.Valid && user.StudentRankID.Int64 > 16 {
+		selectedID = 16 // highest testable rank
+	}
+
 	var ranksToShow []StudentRank
 	if user.AllowFullAccess {
 		ranksToShow = allRanks
 	} else {
 		for _, rr := range allRanks {
-			if rr.ID <= nextID {
+			if rr.ID <= selectedID {
 				ranksToShow = append(ranksToShow, rr)
 			}
 		}
@@ -238,7 +258,7 @@ func FormsPageHandler(w http.ResponseWriter, r *http.Request) {
 	// default select the nextID rank and load that rank's form
 	var selected *StudentRank
 	for _, rr := range ranksToShow {
-		if rr.ID == nextID {
+		if rr.ID == selectedID {
 			tmp := rr
 			selected = &tmp
 		}
@@ -248,10 +268,14 @@ func FormsPageHandler(w http.ResponseWriter, r *http.Request) {
 		formID := int(selected.FormID.Int64)
 		form, _ = GetFormByID(formID)
 	}
+
+	nextForm, _ := GetFormByRankID(nextID)
+
 	render(w, "forms", map[string]interface{}{
 		"User":     user,
 		"Ranks":    ranksToShow,
 		"Selected": selected,
+		"NextForm": nextForm,
 		"Form":     form,
 	})
 }
