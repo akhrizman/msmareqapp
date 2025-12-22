@@ -12,6 +12,22 @@
 
     {{template "navbar" .}}
 
+    <style>
+        .blink_me {
+            animation: blinker 4s linear infinite;
+            color: red;
+            margin: 0 3rem;
+        }
+
+        @keyframes blinker {
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+
+    <h5 class="blink_me">This is site is currently being tested. Please submit issues to a.khrizman@gmail.com</h5>
+
     <div class="container py-4">
         {{if .Error}}<div class="alert alert-danger">{{.Error}}</div>{{end}}
         {{if .Success}}<div class="alert alert-success">{{.Success}}</div>{{end}}
