@@ -14,23 +14,16 @@
             </a>
 
             <!-- Auth + hamburger (always visible) -->
-            <div class="d-flex align-items-center ms-auto ms-lg-0">
+            {{if .User}}
+                <div class="d-flex align-items-center ms-auto ms-lg-0">
 
-                <!-- Auth links -->
-                <ul class="navbar-nav align-items-center me-2 me-lg-auto">
-                    {{if .User}}
+                    <!-- Auth links -->
+                    <ul class="navbar-nav align-items-center me-2 me-lg-auto">
                         <li class="nav-item">
                             <a class="nav-link" href="/logout">Logout</a>
                         </li>
-                    {{else}}
-                        <li class="nav-item">
-                            <a class="nav-link" href="/login">Login</a>
-                        </li>
-                    {{end}}
-                </ul>
-
-                <!-- Hamburger -->
-                {{if .User}}
+                    </ul>
+                    <!-- Hamburger -->
                     <button
                             class="navbar-toggler"
                             type="button"
@@ -42,8 +35,19 @@
                     >
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                {{end}}
-            </div>
+                </div>
+            {{else}}
+                <div class="d-flex align-items-center ms-auto order-lg-last">
+                    <!-- Auth links -->
+                    <ul class="navbar-nav align-items-center me-2">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login">Login</a>
+                        </li>
+                    </ul>
+                </div>
+            {{end}}
+
+
 
             <!-- Collapsible nav -->
             <div class="collapse navbar-collapse" id="mainNav">
