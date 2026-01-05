@@ -1,3 +1,3 @@
 # msmareqapp
 docker build --no-cache -t msmareqapp .
-docker run -p 9085:8080 msmareqapp_dev
+docker run -dp 9088:8080 --name msmareqapp_dev msmareqapp
