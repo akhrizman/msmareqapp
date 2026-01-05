@@ -24,12 +24,21 @@
                         const belt = document.getElementById("karateBelt");
                         belt.style.backgroundColor = data.beltColor;
 
+                        // Create stripes for the right side (remaining if any)
                         for (let i = 0; i < (data.stripeCount || 0); i++) {
-                            const stripe = document.createElement("div");
-                            stripe.className = "stripe";
-                            stripe.style.backgroundColor = data.stripeColor;
-                            stripe.style.right = `${35 + i * 20}px`;
-                            belt.appendChild(stripe);
+                            // Right-side stripe
+                            const rightStripe = document.createElement("div");
+                            rightStripe.className = "stripe stripe-right";
+                            rightStripe.style.backgroundColor = data.stripeColor;
+                            rightStripe.style.right = `${35 + i * 20}px`;
+                            belt.appendChild(rightStripe);
+
+                            // Left-side stripe
+                            const leftStripe = document.createElement("div");
+                            leftStripe.className = "stripe stripe-left";
+                            leftStripe.style.backgroundColor = data.stripeColor;
+                            leftStripe.style.left = `${35 + i * 20}px`;
+                            belt.appendChild(leftStripe);
                         }
                     })
                     .catch(err => {
