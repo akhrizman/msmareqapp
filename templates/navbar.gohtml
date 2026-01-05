@@ -3,7 +3,7 @@
     <nav class="navbar navbar-expand-lg navbar-msma">
         <div class="container-fluid">
 
-            <!-- Brand -->
+            <!-- Logo -->
             <a class="navbar-brand d-flex align-items-center me-2" href="/">
                 <img
                         id="msmaLogo"
@@ -13,14 +13,15 @@
                 >
             </a>
 
-            <!-- Auth + hamburger (always visible) -->
+            <!-- Responsive Navbar Links -->
             <div class="d-flex align-items-center ms-auto ms-lg-0">
 
-                <!-- Auth links -->
+                <!-- Show Name when logged in, show Login Link when logged out -->
                 <ul class="navbar-nav align-items-center me-2 me-lg-auto">
                     {{if .User}}
+                        <!-- Name as link even though redundant with My Profile link -->
                         <li class="nav-item">
-                            <a class="nav-link" href="/logout">Logout</a>
+                            <a class="nav-link" href="/profile">{{.User.FirstName}} {{.User.LastName}}</a>
                         </li>
                     {{else}}
                         <li class="nav-item">
@@ -29,7 +30,9 @@
                     {{end}}
                 </ul>
 
-                <!-- Hamburger -->
+
+                <!-- Show Hamburger when logged in -->
+                {{if .User}}
                 <button
                         class="navbar-toggler"
                         type="button"
@@ -41,20 +44,24 @@
                 >
                     <span class="navbar-toggler-icon"></span>
                 </button>
+                {{end}}
             </div>
 
-            <!-- Collapsible nav -->
+            <!-- Navbar links (in Hamburger for mobile views)  -->
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav ms-lg-auto text-center text-lg-start mb-2 mb-lg-0">
                     {{if .User}}
+                        <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
                         <li class="nav-item"><a class="nav-link" href="/profile">My Profile</a></li>
+
+                        {{if .User.IsAdmin}}
+                            <li class="nav-item"><a class="nav-link" href="/admin/manage-users">Manage Users</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/admin/add-user">Add User</a></li>
+                        {{end}}
+
                         <li class="nav-item"><a class="nav-link" href="/testing">Test Requirements</a></li>
                         <li class="nav-item"><a class="nav-link" href="/forms">Forms</a></li>
 
-                        {{if .User.IsAdmin}}
-                            <li class="nav-item"><a class="nav-link" href="/admin/add-user">Add User</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/admin/manage-users">Manage Users</a></li>
-                        {{end}}
                     {{end}}
                 </ul>
             </div>
