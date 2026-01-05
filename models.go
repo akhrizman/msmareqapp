@@ -38,6 +38,24 @@ type User struct {
 	ForcePasswordChange bool
 }
 
+func (u User) Initials() string {
+	var firstInitial, lastInitial string
+
+	if u.FirstName != "" {
+		firstInitial = strings.ToUpper(string([]rune(u.FirstName)[0]))
+	}
+
+	if u.LastName != "" {
+		lastInitial = strings.ToUpper(string([]rune(u.LastName)[0]))
+	}
+
+	if firstInitial == "" && lastInitial == "" {
+		return ""
+	}
+
+	return firstInitial + "." + lastInitial + "."
+}
+
 type UserDTO struct {
 	Username        string `json:"username"`
 	FirstName       string `json:"first_name"`
