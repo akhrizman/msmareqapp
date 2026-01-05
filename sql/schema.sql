@@ -14,6 +14,9 @@ CREATE TABLE IF NOT EXISTS student_rank (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `name` NVARCHAR(255) NOT NULL,
     `description` NVARCHAR(1024),
+    `belt_color` NVARCHAR(32),
+    `stripe_color` NVARCHAR(32),
+    `stripe_count` INT,
     `requirements` TEXT,
     `form_id` INT,
     CONSTRAINT fk_rank_form FOREIGN KEY (form_id) REFERENCES form(id) ON DELETE SET NULL

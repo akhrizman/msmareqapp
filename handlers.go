@@ -37,6 +37,7 @@ var templateFuncs = template.FuncMap{
 var templates = template.Must(
 	template.New("").Funcs(templateFuncs).ParseFiles(
 		"templates/navbar.gohtml",
+		"templates/belt.gohtml",
 		"templates/layout_top.gohtml",
 		"templates/layout_bottom.gohtml",
 		"templates/home.gohtml",
@@ -517,6 +518,41 @@ func FormGet(w http.ResponseWriter, r *http.Request) {
 	err = json.NewEncoder(w).Encode(form)
 	if err != nil {
 		log.Printf("Error encoding form: %v", err)
+	}
+}
+
+func BeltGet(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	idParam := r.URL.Query().Get("id")
+	if idParam == "" {
+		http.Error(w, "Missing id parameter", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		http.Error(w, "Invalid id parameter", http.StatusBadRequest)
+		return
+	}
+
+	rank, err := GetBeltDetailsByRankID(id)
+	if err == sql.ErrNoRows {
+		http.Error(w, "Belt Details not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(rank)
+	if err != nil {
+		log.Printf("Error encoding rank: %v", err)
 	}
 }
 

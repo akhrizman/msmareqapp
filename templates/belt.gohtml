@@ -1,0 +1,45 @@
+{{define "belt"}}
+    <link href="/static/belt.css" rel="stylesheet" type="text/css">
+
+    {{if .User}}
+        <data id="studentRankID" value="{{.User.StudentRankID.Value}}"></data>
+        <div class="belt-container">
+            <div id="karateBelt" class="belt"></div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const userRankID = document.getElementById("studentRankID").getAttribute("value");
+                const beltText = document.getElementById("karateBelt");
+
+                fetch(`/belt?id=${encodeURIComponent(userRankID)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Failed to fetch belt details");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log(data);
+                        const belt = document.getElementById("karateBelt");
+                        belt.style.backgroundColor = data.beltColor;
+
+                        for (let i = 0; i < (data.stripeCount || 0); i++) {
+                            const stripe = document.createElement("div");
+                            stripe.className = "stripe";
+                            stripe.style.backgroundColor = data.stripeColor;
+                            stripe.style.right = `${35 + i * 20}px`;
+                            belt.appendChild(stripe);
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        beltText.innerText = "Unable to belt details.";
+                    });
+
+            });
+        </script>
+
+    {{end}}
+
+{{end}}

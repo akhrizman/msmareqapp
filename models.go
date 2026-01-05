@@ -19,6 +19,9 @@ type StudentRank struct {
 	Name         string        `json:"name"`
 	Description  string        `json:"description"`
 	Requirements string        `json:"requirements"`
+	BeltColor    string        `json:"beltColor"`
+	StripeColor  string        `json:"stripeColor"`
+	StripeCount  string        `json:"stripeCount"`
 	FormID       sql.NullInt64 `json:"formId"`
 }
 
@@ -118,6 +121,15 @@ func GetAllRanks() ([]StudentRank, error) {
 		out = append(out, r)
 	}
 	return out, nil
+}
+
+func GetBeltDetailsByRankID(id int) (*StudentRank, error) {
+	r := &StudentRank{}
+	err := db.QueryRow(`SELECT id, belt_color, stripe_color, stripe_count FROM student_rank WHERE id = ?`, id).Scan(&r.ID, &r.BeltColor, &r.StripeColor, &r.StripeCount)
+	if err != nil {
+		return nil, err
+	}
+	return r, nil
 }
 
 func GetRankByID(id int) (*StudentRank, error) {

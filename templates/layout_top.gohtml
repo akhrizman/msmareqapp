@@ -11,8 +11,9 @@
     <body>
 
     {{template "navbar" .}}
+    {{template "belt" .}}
 
-    <div class="container py-4">
+    <div class="container py-3">
         {{if .Error}}<div class="alert alert-danger">{{.Error}}</div>{{end}}
         {{if .Success}}<div class="alert alert-success">{{.Success}}</div>{{end}}
 {{end}}

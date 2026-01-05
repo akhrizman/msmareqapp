@@ -53,6 +53,7 @@ func main() {
 	admin.HandleFunc("/user", UserGetHandler).Methods("GET")
 	admin.HandleFunc("/reset", ResetUserPasswordHandler).Methods("POST")
 	auth.HandleFunc("/rank", RankGet).Methods("GET")
+	auth.HandleFunc("/belt", BeltGet).Methods("GET")
 	auth.HandleFunc("/form", FormGet).Methods("GET")
 
 	// static (for local css/js)

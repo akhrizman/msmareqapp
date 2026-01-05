@@ -1,0 +1,21 @@
+.belt-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.belt {
+    width: 90%;
+    height: 28px;
+    border-radius: 6px;
+    position: relative;
+    box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
+}
+.belt .stripe {
+    position: absolute;
+    right: 12px;
+    top: 0;
+    width: 10px;
+    height: 100%;
+}

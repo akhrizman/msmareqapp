@@ -140,7 +140,8 @@ INSERT INTO msmareqdb.form (id, name, description, steps, video_link) VALUES (9,
 8. Step forward, jumping in air crossing your feet landing in a squatting position, low X block, **KIAP**.
 9. Stepping out with right foot, reinforced block in front stance. Half turn in other direction, reach in, grab groin, then pull back. Hands come to a fist.
 10. Then do a double side defense.
-11. Step in, grab groin, pull back as in #9.', '');
+11. Step in, grab groin, pull back as in #9.
+', '');
 INSERT INTO msmareqdb.form (id, name, description, steps, video_link) VALUES (10, 'Bassai', 'Iron Fortress', '1. Left leg comes up barely touches inside of thigh, hands come over your right shoulder then straight down in front.
 2. One hand is wrapped over the other, up on one, turn on two, three lean, then downward strike (reinforced) onto the nose.
 3. Look in the other direction, outward block, outward block.
@@ -227,9 +228,10 @@ INSERT INTO msmareqdb.form (id, name, description, steps, video_link) VALUES (13
 
 
 
+
 # Gup Requirements
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (1, 'New Student', 'White Belt', 'No Requirements', 1);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (2, '12th Gup', 'White Belt (yellow stripe)', 'GENERAL REQUIREMENTS
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (1, 'New Student', 'White Belt', 'No Requirements', 1, 'white', '', 0);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (2, '12th Gup', 'White Belt (yellow stripe)', 'GENERAL REQUIREMENTS
 1. Have a clean white gi with a MKS patch over the heart
 
 KNOWLEDGE
@@ -257,8 +259,8 @@ Proper Protocol
 4. Resting position (Natural stance with hands clasped behind the back).
 5. Proper sitting position (Feet crossed in front with back straight).
 6. Proper kneeling position (Feet behind you and flat on the ground. Hands on thighs).
-7. How to tie the belt.', 1);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (3, '11th Gup', 'Senior White Belt (2 yellow stripes)', 'GENERAL REQUIREMENTS
+7. How to tie the belt.', 1, 'white', 'yellow', 1);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (3, '11th Gup', 'Senior White Belt (2 yellow stripes)', 'GENERAL REQUIREMENTS
 1. All requirements for 12th Gup.
 
 KNOWLEDGE
@@ -283,8 +285,8 @@ LEG TECHNIQUES
 WARM UP
 1. Ten push-ups
 2. Ten deep knee bends
-3. Six hip stretches', 1);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (4, '10th Gup', 'Yellow Belt', 'GENERAL REQUIREMENTS
+3. Six hip stretches', 1, 'white', 'yellow', 2);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (4, '10th Gup', 'Yellow Belt', 'GENERAL REQUIREMENTS
 1. All requirements for 12th and 11th Gups.
 
 KNOWLEDGE
@@ -311,8 +313,8 @@ BREAK FALLS
 1. Shoulder Roll (left and right side).
 2. Front Break Falls (from kneeling position).
 3. Rear Break Falls (from standing position).
-4. Side Break Falls (left and right).', 2);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (5, '9th Gup', 'Senior Yellow Belt (blue stripe)', 'GENERAL REQUIREMENTS
+4. Side Break Falls (left and right).', 2, 'yellow', '', 0);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (5, '9th Gup', 'Senior Yellow Belt (blue stripe)', 'GENERAL REQUIREMENTS
 1. All requirements for 12th thru 10th Gups.
 
 KNOWLEDGE
@@ -337,8 +339,8 @@ FORM
 
 ONE STEP ATTACKS: ONE STEP (Right middle and left middle)
 	1. Step to the inside into a Front Stance while executing a Knife-hand block
-	2. Inside Chop to the neck (full hip)', 2);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (6, '8th Gup', 'Blue Belt', 'GENERAL REQUIREMENTS
+	2. Inside Chop to the neck (full hip)', 2, 'yellow', 'blue', 1);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (6, '8th Gup', 'Blue Belt', 'GENERAL REQUIREMENTS
 1. All requirements for 12th thru 9th Gups.
 2. Participate in one tournament since making 9th Gup.
 
@@ -384,8 +386,8 @@ COMBINATION TECHNIQUES
 2. Sliding-up Front Kick into a Sliding-up Round Kick (Same Leg)
 3. Back Fist, Reverse Punch, Stepping Front Kick
 4. Back Fist, Reverse Punch, Spinning Round Kick
-5. Back Fist, Stepping Back Kick, Back Fist', 3);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (7, '7th Gup', 'Senior Blue Belt (green stripe)', 'GENERAL REQUIREMENTS
+5. Back Fist, Stepping Back Kick, Back Fist', 3, 'blue', '', 0);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (7, '7th Gup', 'Senior Blue Belt (green stripe)', 'GENERAL REQUIREMENTS
 1. All requirements for 12th thru 8th Gups.
 
 HAND TECHNIQUES
@@ -421,8 +423,8 @@ slightly, turn the opponent\'s wrist. Wrist lock.
 2. Release from a two-handed choke: Form a wedge by interlocking your
 hands. Explode the wedge between the opponent\'s arm. At the top of the arch,
 spread your arms to separate the opponent\'s released arms. Grab the shoulders.
-Knee to groin.', 4);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (8, '6th Gup', 'Green Belt', 'GENERAL REQUIREMENTS
+Knee to groin.', 4, 'blue', 'green', 1);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (8, '6th Gup', 'Green Belt', 'GENERAL REQUIREMENTS
 1. All requirements for 12th thru 7th Gups.
 2. Participate in a tournament since making 7th Gup.
 
@@ -469,8 +471,8 @@ SELF DEFENSE
 grabbed. Grab the side of the wrist. While turning your body slightly, turn the opponent\'s wrist.
 Wrist lock to an arm lock.
 2. Release from a two-handed choke: Step back into a back stance while rolling your head down
-and around. Side kick or back kick (the student choice).', 5);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (9, '5th Gup', 'Senior Green Belt (purple stripe)', 'GENERAL REQUIREMENTS
+and around. Side kick or back kick (the student choice).', 5, 'green', '', 0);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (9, '5th Gup', 'Senior Green Belt (purple stripe)', 'GENERAL REQUIREMENTS
 1. All requirements for 12th thru 6th Gups.
 2. Participate in at least one tournament since making 6th Gup.
 3. Demonstrate hand combinations (example: jab - reverse punch, back fist to inverted punch).
@@ -524,8 +526,8 @@ front leg.
 GROUND TECHNIQUES
 1. Close guard position and how to maintain the guard (basic level).
 2. Basic escape from the guard.
-3. Side mount.', 6);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (10, '4th Gup', 'Purple Belt', 'GENERAL REQUIREMENTS
+3. Side mount.', 6, 'green', 'purple', 1);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (10, '4th Gup', 'Purple Belt', 'GENERAL REQUIREMENTS
 1. All requirements from 12th thru 5th Gups.
 2. Assist with at least one class per week
 3. Free sparring: students attempt take downs and advance techniques.
@@ -577,8 +579,8 @@ straddle-leg stance. Grab their legs and lift. Drop them to the ground. Form a b
 and push down until they release. Arm bar.
 2. Defense from being grabbed from behind with their arm under yours: Base out into a straddle-
 leg stance. Bend forward and touch the ground (base down). Grab a leg. Pull leg forward
-between your legs. Press down on the knee.', 7);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (11, '3rd Gup', 'Senior Purple Belt (brown stripe)', 'GENERAL REQUIREMENTS
+between your legs. Press down on the knee.', 7, 'purple', '', 0);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (11, '3rd Gup', 'Senior Purple Belt (brown stripe)', 'GENERAL REQUIREMENTS
 1. All requirements for 12th and 4th Gups.
 2. Free Sparring: One on one or Two on one.
 
@@ -615,8 +617,8 @@ DEFENSES AGAINST A ROUND KICK
 1. Back Kick
 2. Step in jam and catch followed by Ouchi-gari (inner reap)
 3. Inverted punch with front hand
-4. Step in Reverse Punch', 8);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (12, '2nd Gup', 'Brown Belt', 'GENERAL REQUIREMENTS
+4. Step in Reverse Punch', 8, 'purple', 'brown', 1);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (12, '2nd Gup', 'Brown Belt', 'GENERAL REQUIREMENTS
 1. Al requirements from 12th thru 3rd Gups.
 2. Participate in at least one tournament since making 3rd Gup.
 3. Student to teach class with Black Belt supervision.
@@ -636,8 +638,8 @@ SELF DEFENSE
 
 GROUND TECHNIQUES
 1. Rear naked choke (required for 18 years or older).
-2. Triangle choke from guard position.', 9);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (13, '1st Gup', 'Senior Brown Belt (black stripe)', 'GENERAL REQUIREMENTS
+2. Triangle choke from guard position.', 9, 'saddlebrown', '', 0);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (13, '1st Gup', 'Senior Brown Belt (black stripe)', 'GENERAL REQUIREMENTS
 1. All requirements from 12th thru 2nd Gups.
 2. Student to teach class with Black Belt supervision.
 3. Demonstrate free sparring ability and have a thorough knowledge of the various techniques used in free sparring and how they are applied.
@@ -668,18 +670,19 @@ FIGHTING TAKEDOWN
 	B. Against circular rear hand punch
 
 GROUND TECHNIQUES
-1. Arm bar from the guard.', 10);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (14, '1st Dan', '1st Degree Black Belt', 'FORM:
-1. Ro Hai', 11);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (15, '2nd Dan', '2nd Degree Black Belt', 'FORM:
-1. Nianchi Cho Dan', 12);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (16, '3rd Dan', '3rd Degree Black Belt', 'FORM:
-1. Koon San Goon', 13);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (17, '4th Dan', '4th Degree Black Belt', 'No Testing Requirements', 1);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (18, '5th Dan', '5th Degree Black Belt', 'No Testing Requirements', 1);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (19, '6th Dan', '6th Degree Black Belt', 'No Testing Requirements', 1);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (20, '7th Dan', '7th Degree Black Belt', 'No Testing Requirements', 1);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (21, '8th Dan', '8th Degree Black Belt', 'No Testing Requirements', 1);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (22, '9th Dan', '9th Degree Black Belt', 'No Testing Requirements', 1);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (23, 'Grand master', 'Highest Achievable Rank', 'No Testing Requirements', 1);
-INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id) VALUES (24, 'Grand master', 'Highest Achievable Rank', 'No Testing Requirements', 1);
+1. Arm bar from the guard.', 10, 'saddlebrown', 'black', 1);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (14, '1st Dan', '1st Degree Black Belt', 'FORM:
+1. Ro Hai', 11, 'black', '', 1);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (15, '2nd Dan', '2nd Degree Black Belt', 'FORM:
+1. Nianchi Cho Dan', 12, 'black', 'red', 2);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (16, '3rd Dan', '3rd Degree Black Belt', 'FORM:
+1. Koon San Goon', 13, 'black', 'red', 3);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (17, '4th Dan', '4th Degree Black Belt', 'No Testing Requirements', 1, 'black', 'red', 0);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (18, '5th Dan', '5th Degree Black Belt', 'No Testing Requirements', 1, 'black', 'red', 0);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (19, '6th Dan', '6th Degree Black Belt', 'No Testing Requirements', 1, 'black', 'red', 0);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (20, '7th Dan', '7th Degree Black Belt', 'No Testing Requirements', 1, 'black', 'red', 0);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (21, '8th Dan', '8th Degree Black Belt', 'No Testing Requirements', 1, 'black', 'red', 0);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (22, '9th Dan', '9th Degree Black Belt', 'No Testing Requirements', 1, 'black', 'red', 0);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (23, 'Grand master', 'Highest Achievable Rank', 'No Testing Requirements', 1, 'black', 'red', 0);
+INSERT INTO msmareqdb.student_rank (id, name, description, requirements, form_id, belt_color, stripe_color, stripe_count) VALUES (24, 'Grand master', 'Highest Achievable Rank', 'No Testing Requirements', 1, 'black', 'red', 0);
+
