@@ -1,3 +1,4 @@
 .idea/*
 sql/userdata.sql
+sql/requirements.sql
 .env
