@@ -189,9 +189,9 @@ func TestingRequirementsPageHandler(w http.ResponseWriter, r *http.Request) {
 	allRanks, _ := GetAllTestableRanks()
 	nextID, _ := nextRankIDForUser(user)
 
-	// Clamp selected rank to 16 if user's rank is greater than 16
+	// Clamp selected rank to 16 if user's rank is greater than 17
 	selectedID := nextID
-	if user.StudentRankID.Valid && user.StudentRankID.Int64 > 16 {
+	if user.StudentRankID.Valid && user.StudentRankID.Int64 > 17 {
 		selectedID = 16 // highest testable rank
 	}
 
@@ -240,9 +240,9 @@ func FormsPageHandler(w http.ResponseWriter, r *http.Request) {
 	allRanks, _ := GetAllTestableRanks()
 	nextID, _ := nextRankIDForUser(user)
 
-	// Clamp selected rank to 16 if user's rank is greater than 16
+	// Clamp selected rank to 16 if user's rank is greater than 17
 	selectedID := nextID
-	if user.StudentRankID.Valid && user.StudentRankID.Int64 > 16 {
+	if user.StudentRankID.Valid && user.StudentRankID.Int64 > 17 {
 		selectedID = 16 // highest testable rank
 	}
 
