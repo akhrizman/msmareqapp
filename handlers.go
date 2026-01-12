@@ -189,10 +189,10 @@ func TestingRequirementsPageHandler(w http.ResponseWriter, r *http.Request) {
 	allRanks, _ := GetAllTestableRanks()
 	nextID, _ := nextRankIDForUser(user)
 
-	// Clamp selected rank to 16 if user's rank is greater than 17
+	// Clamp selected rank to 17 if user's rank is greater than 17
 	selectedID := nextID
 	if user.StudentRankID.Valid && user.StudentRankID.Int64 > 17 {
-		selectedID = 16 // highest testable rank
+		selectedID = 17 // highest testable rank
 	}
 
 	// Build dropdown depending on allow_full_access
@@ -240,10 +240,10 @@ func FormsPageHandler(w http.ResponseWriter, r *http.Request) {
 	allRanks, _ := GetAllTestableRanks()
 	nextID, _ := nextRankIDForUser(user)
 
-	// Clamp selected rank to 16 if user's rank is greater than 17
+	// Clamp selected rank to 17 if user's rank is greater than 17
 	selectedID := nextID
 	if user.StudentRankID.Valid && user.StudentRankID.Int64 > 17 {
-		selectedID = 16 // highest testable rank
+		selectedID = 17 // highest testable rank
 	}
 
 	var ranksToShow []StudentRank

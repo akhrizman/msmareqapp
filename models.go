@@ -104,7 +104,7 @@ func UpdateUserProfile(u *User) error {
 }
 
 func GetAllTestableRanks() ([]StudentRank, error) {
-	rows, err := db.Query(`SELECT id, name, description, requirements, form_id FROM student_rank WHERE id BETWEEN 2 AND 16  ORDER BY id`)
+	rows, err := db.Query(`SELECT id, name, description, requirements, form_id FROM student_rank WHERE id BETWEEN 2 AND 17  ORDER BY id`)
 	if err != nil {
 		return nil, err
 	}
