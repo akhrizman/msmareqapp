@@ -4,7 +4,7 @@
     <h2>FORMS</h2>
     <form method="post" action="/forms">
         <div class="mb-3">
-            <label for="rank" class="form-label">My Next Required Form: <em>{{.NextForm.Name}} ({{.Selected.Name}})</em></label>
+            <label for="rank" class="form-label">My Next Required Form: <em>{{.NextForm.Name}}</em></label>
             <select class="form-select" id="rank" name="rank_id">
                 {{range .Ranks}}
                     <option value="{{.ID}}" {{if $.Selected}}{{if eq $.Selected.ID .ID}}selected{{end}}{{end}}>{{.Name}}</option>
@@ -13,13 +13,13 @@
         </div>
     </form>
 
-    {{if .Form}}
+    {{if .FormToDisplay}}
         <hr>
-        <h3 id="formName">{{.Form.Name}}</h3>
-        <p id="formDescription">{{.Form.Description}}</p>
+        <h3 id="formName">{{.FormToDisplay.Name}}</h3>
+        <p id="formDescription">{{.FormToDisplay.Description}}</p>
 {{/*        <p>Video: <a id="formVideoLink" href="{{.Form.VideoLink}}">{{.Form.VideoLink}}</a></p>*/}}
 {{/*        <h5>Steps</h5>*/}}
-        <pre id="formSteps">{{.Form.Steps}}</pre>
+        <pre id="formSteps">{{.FormToDisplay.Steps}}</pre>
     {{end}}
 
     {{template "layout_bottom" .}}

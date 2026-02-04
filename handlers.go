@@ -258,19 +258,22 @@ func FormsPageHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// default select the nextID rank and load that rank's form
-	//idParam := r.URL.Query().Get("formId")
-	//if idParam == "" {
-	//	http.Error(w, "Missing id parameter", http.StatusBadRequest)
-	//	return
-	//}
-	//
-	//id, err := strconv.Atoi(idParam)
-	//if err != nil {
-	//	http.Error(w, "Invalid id parameter", http.StatusBadRequest)
-	//	return
-	//}
+	idParam := r.URL.Query().Get("id")
+	formId, err := strconv.Atoi(idParam)
+	if err != nil {
+		formId = 0
+	}
 
+	// Set form if provided by url param
+	var formToDisplay *Form
+	if formId > 0 {
+		formToDisplay, err = GetFormByID(formId)
+		if err != nil {
+			http.Error(w, "Form Not Found", http.StatusBadRequest)
+		}
+	}
+
+	// default select the nextID rank and load that rank's form
 	var selected *StudentRank
 	for _, rr := range ranksToShow {
 		if rr.ID == selectedID {
@@ -278,20 +281,26 @@ func FormsPageHandler(w http.ResponseWriter, r *http.Request) {
 			selected = &tmp
 		}
 	}
-	var form *Form
-	if selected != nil && selected.FormID.Valid {
-		formID := int(selected.FormID.Int64)
-		form, _ = GetFormByID(formID)
+
+	// set the form to the student's next required form
+	if formToDisplay == nil {
+		if selected != nil && selected.FormID.Valid {
+			formID := int(selected.FormID.Int64)
+			formToDisplay, _ = GetFormByID(formID)
+		}
+	} else {
+		// form to display was set by url param so adjust dropdown selection accordingly
+		selected, _ = GetRankByFormID(formId) // default to showing 12th gup
 	}
 
 	nextForm, _ := GetFormByRankID(nextID)
 
 	render(w, "forms", map[string]interface{}{
-		"User":     user,
-		"Ranks":    ranksToShow,
-		"Selected": selected,
-		"NextForm": nextForm,
-		"Form":     form,
+		"User":          user,
+		"Ranks":         ranksToShow,
+		"Selected":      selected,
+		"NextForm":      nextForm,
+		"FormToDisplay": formToDisplay,
 	})
 }
 
@@ -743,5 +752,5 @@ func EditFormsFormHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/forms", http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/forms?id=%v", formId), http.StatusSeeOther)
 }

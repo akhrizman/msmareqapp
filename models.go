@@ -197,6 +197,17 @@ func GetFormByRankID(id int) (*Form, error) {
 	return f, nil
 }
 
+func GetRankByFormID(formId int) (*StudentRank, error) {
+	r := &StudentRank{}
+	var formID sql.NullInt64
+	err := db.QueryRow(`SELECT id, name, description, requirements, form_id FROM student_rank WHERE form_id = ?`, formId).Scan(&r.ID, &r.Name, &r.Description, &r.Requirements, &formID)
+	if err != nil {
+		return nil, err
+	}
+	r.FormID = formID
+	return r, nil
+}
+
 func CreateUser(u *User, passwordHash string) error {
 	isAdmin := 0
 	if u.IsAdmin {
