@@ -14,21 +14,23 @@
                 </select>
             </div>
 
-            <input type="hidden" name="id" id="formId">
+            <input type="hidden" name="formId" id="formId">
 
             <div class="mb-3">
                 <label class="form-label">Name</label>
-                <input type="text" id="formName" name="name" value="" class="form-control mb-3">
+                <input type="text" id="formName" name="formName" class="form-control mb-3" disabled>
 
                 <label class="form-label">Description</label>
-                <input type="text" id="formDescription" name="description" value="" class="form-control mb-3">
+                <input type="text" id="formDescription" name="formDescription" class="form-control mb-3" disabled>
 
-{{/*                <label class="form-label">Text</label>*/}}
+                <label class="form-label">Text will not wrap on smaller devices.  It will appear exactly as it is displayed here, so it is recommended to avoid long lines.</label>
                 <textarea
                         id="formSteps"
-                        name="steps"
-                        rows="8"
-                        class="form-control"
+                        name="formSteps"
+                        rows="20"
+                        class="form-control font-monospace font-like-pre"
+                        wrap="off"
+                        style="font-size:0.875em"
                         disabled
                 ></textarea>
             </div>
@@ -53,14 +55,18 @@
             let formName = document.getElementById("formName");
             let formDescription = document.getElementById("formDescription");
             let formSteps = document.getElementById("formSteps");
+            let formIdInput = document.getElementById("formId");
 
             const formId = this.value;
-            if (formId === "0") {
+
+            if (!formId) {
                 disableForm()
                 return;
             }
 
-            fetch(`/form?formId=${encodeURIComponent(formId)}`)
+            formIdInput.value = formId;
+
+            fetch(`/form?id=${encodeURIComponent(formId)}`)
                 .then(resp => {
                     if (!resp.ok) {
                         throw new Error("Form not found");
@@ -69,6 +75,8 @@
                 })
                 .then(form => {
                     saveButton.disabled = false;
+                    formName.disabled = false;
+                    formDescription.disabled = false;
                     formSteps.disabled = false;
 
                     formName.value = form.name || "";
@@ -85,9 +93,14 @@
             let formName = document.getElementById("formName");
             let formDescription = document.getElementById("formDescription");
             let formSteps = document.getElementById("formSteps");
+            let formIdInput = document.getElementById("formId");
 
             saveButton.disabled = true;
+            formName.disabled = true;
+            formDescription.disabled = true;
             formSteps.disabled = true;
+
+            formIdInput.value = 0;
             formName.value = "";
             formDescription.value = "";
             formSteps.value = "";

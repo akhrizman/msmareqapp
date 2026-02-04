@@ -259,6 +259,18 @@ func FormsPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// default select the nextID rank and load that rank's form
+	//idParam := r.URL.Query().Get("formId")
+	//if idParam == "" {
+	//	http.Error(w, "Missing id parameter", http.StatusBadRequest)
+	//	return
+	//}
+	//
+	//id, err := strconv.Atoi(idParam)
+	//if err != nil {
+	//	http.Error(w, "Invalid id parameter", http.StatusBadRequest)
+	//	return
+	//}
+
 	var selected *StudentRank
 	for _, rr := range ranksToShow {
 		if rr.ID == selectedID {
@@ -511,22 +523,22 @@ func FormForRankGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// FormGet Form API to retrieve form by formId
+// FormGet Form API to retrieve form by id
 func FormGet(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	idParam := r.URL.Query().Get("formId")
+	idParam := r.URL.Query().Get("id")
 	if idParam == "" {
-		http.Error(w, "Missing formId parameter", http.StatusBadRequest)
+		http.Error(w, "Missing id parameter", http.StatusBadRequest)
 		return
 	}
 
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		http.Error(w, "Invalid formId parameter", http.StatusBadRequest)
+		http.Error(w, "Invalid id parameter", http.StatusBadRequest)
 		return
 	}
 
@@ -671,6 +683,7 @@ func sqlNullInt(v int) (ni sql.NullInt64) {
 }
 
 func EditFormsPageHandler(w http.ResponseWriter, r *http.Request) {
+	user, _ := CurrentUser(r)
 	forms, err := GetFormNames()
 
 	if err != nil {
@@ -679,41 +692,56 @@ func EditFormsPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render(w, "edit_forms", map[string]interface{}{
+		"User":  user,
 		"Forms": forms,
 	})
 }
 
 func EditFormsFormHandler(w http.ResponseWriter, r *http.Request) {
-	user, _ := CurrentUser(r)
-	err := r.ParseForm()
-	if err != nil {
-		log.Printf("Error parsing Manage User form: %v", err)
-	}
-	target := r.FormValue("selected_username")
-	// load the user
-	targetUser, err := GetUserByUsername(target)
-	if err != nil {
-		users, _ := GetAllUsersExcept(user.Username)
-		ranks, _ := GetAllRanks()
-		render(w, "manage_users", map[string]interface{}{"User": user, "Users": users, "Ranks": ranks, "Error": "cannot find user"})
-		return
-	}
-	// update fields
-	targetUser.FirstName = strings.TrimSpace(r.FormValue("first_name"))
-	targetUser.LastName = strings.TrimSpace(r.FormValue("last_name"))
-	targetUser.IsAdmin = parseBoolFromForm(r, "is_admin")
-	targetUser.IsActive = parseBoolFromForm(r, "is_active")
-	targetUser.AllowFullAccess = parseBoolFromForm(r, "allow_full_access")
-	rankID, _ := strconv.Atoi(r.FormValue("rank_id"))
-	targetUser.StudentRankID = sqlNullInt(rankID)
-	if err := UpdateUserAdminDetails(targetUser); err != nil {
-		users, _ := GetAllUsersExcept(user.Username)
-		ranks, _ := GetAllRanks()
-		render(w, "manage_users", map[string]interface{}{"User": user, "Users": users, "Ranks": ranks, "Error": "update failed"})
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	users, _ := GetAllUsersExcept(user.Username)
-	ranks, _ := GetAllRanks()
-	render(w, "manage_users", map[string]interface{}{"User": user, "Users": users, "Ranks": ranks, "Success": targetUser.Username + " Updated"})
+	//user, _ := CurrentUser(r)
+	err := r.ParseForm()
+
+	if err != nil {
+		log.Printf("error parsing Form Update form: %v", err)
+	}
+
+	formName := strings.TrimSpace(r.FormValue("formName"))
+	if formName == "" {
+		render(w, "edit_forms", map[string]interface{}{"Error": "form name required"})
+		return
+	}
+
+	formDescription := strings.TrimSpace(r.FormValue("formDescription"))
+	if formDescription == "" {
+		render(w, "edit_forms", map[string]interface{}{"Error": "form description required"})
+		return
+	}
+
+	formSteps := strings.TrimSpace(r.FormValue("formSteps"))
+	if formSteps == "" {
+		render(w, "edit_forms", map[string]interface{}{"Error": "form steps required"})
+		return
+	}
+
+	formId, _ := strconv.Atoi(r.FormValue("formId"))
+	form, err := GetFormByID(formId)
+	if err != nil {
+		log.Printf("error getting form: %v", err)
+	}
+
+	form.Name = formName
+	form.Description = formDescription
+	form.Steps = formSteps
+
+	if err := UpdateForm(form); err != nil {
+		render(w, "edit_forms", map[string]interface{}{"Error": "server error"})
+		return
+	}
+
+	http.Redirect(w, r, "/forms", http.StatusSeeOther)
 }

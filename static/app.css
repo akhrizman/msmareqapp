@@ -44,3 +44,8 @@
 .toggle-switch input:checked + .toggle-slider::before {
     transform: translateX(20px);
 }
+
+.font-like-pre {
+    white-space: pre;      /* preserve whitespace, no wrapping */
+    overflow-x: auto;      /* allow horizontal scrolling */
+}

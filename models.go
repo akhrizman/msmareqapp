@@ -282,3 +282,8 @@ func ResetUserPasswordToDefault(username, firstName, lastName string) (string, e
 	}
 	return newPwd, nil
 }
+
+func UpdateForm(f *Form) error {
+	_, err := db.Exec(`UPDATE form SET name = ?, description = ?, steps = ? WHERE id = ?`, f.Name, f.Description, f.Steps, f.ID)
+	return err
+}
