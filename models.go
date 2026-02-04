@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -159,6 +160,23 @@ func GetRankByID(id int) (*StudentRank, error) {
 	}
 	r.FormID = formID
 	return r, nil
+}
+
+func GetFormNames() ([]Form, error) {
+	rows, err := db.Query(`SELECT id, name, description FROM form ORDER BY id`)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	var forms []Form
+	for rows.Next() {
+		var form Form
+		rows.Scan(&form.ID, &form.Name, &form.Description)
+		forms = append(forms, form)
+	}
+
+	return forms, nil
 }
 
 func GetFormByID(id int) (*Form, error) {

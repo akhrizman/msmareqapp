@@ -35,7 +35,7 @@
             rankSelect.addEventListener("change", function () {
                 const rankId = this.value;
 
-                fetch(`/form?rankId=${encodeURIComponent(rankId)}`)
+                fetch(`/formForRank?rankId=${encodeURIComponent(rankId)}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error("Failed to fetch form steps");

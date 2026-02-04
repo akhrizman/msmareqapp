@@ -1,0 +1,97 @@
+{{ define "edit_forms" }}
+    {{template "layout_top" .}}
+    <link href="/static/app.css" rel="stylesheet" type="text/css">
+    <h1>Edit Forms</h1>
+
+        <form method="post" action="/admin/edit-forms">
+            <div class="mb-3">
+{{/*                <label class="form-label">Select Form</label>*/}}
+                <select id="formSelect" class="form-select">
+                    <option value="">-- Select a form --</option>
+                    {{range .Forms}}
+                        <option value="{{.ID}}">{{.Name}}</option>
+                    {{end}}
+                </select>
+            </div>
+
+            <input type="hidden" name="id" id="formId">
+
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input type="text" id="formName" name="name" value="" class="form-control mb-3">
+
+                <label class="form-label">Description</label>
+                <input type="text" id="formDescription" name="description" value="" class="form-control mb-3">
+
+{{/*                <label class="form-label">Text</label>*/}}
+                <textarea
+                        id="formSteps"
+                        name="steps"
+                        rows="8"
+                        class="form-control"
+                        disabled
+                ></textarea>
+            </div>
+
+            <button
+                    id="saveBtn"
+                    type="submit"
+                    class="btn btn-primary"
+                    disabled
+            >
+                Save
+            </button>
+        </form>
+
+    {{template "layout_bottom" .}}
+
+    <script>
+        const formSelection = document.getElementById("formSelect");
+        const saveButton = document.getElementById("saveBtn");
+
+        formSelection.addEventListener("change", function () {
+            let formName = document.getElementById("formName");
+            let formDescription = document.getElementById("formDescription");
+            let formSteps = document.getElementById("formSteps");
+
+            const formId = this.value;
+            if (formId === "0") {
+                disableForm()
+                return;
+            }
+
+            fetch(`/form?formId=${encodeURIComponent(formId)}`)
+                .then(resp => {
+                    if (!resp.ok) {
+                        throw new Error("Form not found");
+                    }
+                    return resp.json();
+                })
+                .then(form => {
+                    saveButton.disabled = false;
+                    formSteps.disabled = false;
+
+                    formName.value = form.name || "";
+                    formDescription.value = form.description || "";
+                    formSteps.value = form.steps || "";
+
+                })
+                .catch(() => {
+                    disableForm()
+                });
+        });
+
+        function disableForm() {
+            let formName = document.getElementById("formName");
+            let formDescription = document.getElementById("formDescription");
+            let formSteps = document.getElementById("formSteps");
+
+            saveButton.disabled = true;
+            formSteps.disabled = true;
+            formName.value = "";
+            formDescription.value = "";
+            formSteps.value = "";
+        }
+    </script>
+
+{{end}}

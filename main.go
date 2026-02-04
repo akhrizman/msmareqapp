@@ -50,11 +50,15 @@ func main() {
 	admin.HandleFunc("/manage-users", ManageUsersPageHandler).Methods("GET")
 	admin.HandleFunc("/manage-users", ManageUsersFormHandler).Methods("POST")
 
+	admin.HandleFunc("/edit-forms", EditFormsPageHandler).Methods("GET")
+	admin.HandleFunc("/edit-forms", EditFormsFormHandler).Methods("POST")
+
 	// RestAPI Endpoints
 	admin.HandleFunc("/user", UserGetHandler).Methods("GET")
 	admin.HandleFunc("/reset", ResetUserPasswordHandler).Methods("POST")
 	auth.HandleFunc("/rank", RankGet).Methods("GET")
 	auth.HandleFunc("/belt", BeltGet).Methods("GET")
+	auth.HandleFunc("/formForRank", FormForRankGet).Methods("GET")
 	auth.HandleFunc("/form", FormGet).Methods("GET")
 
 	// static (for local css/js)

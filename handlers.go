@@ -48,6 +48,7 @@ var templates = template.Must(
 		"templates/change_password.gohtml",
 		"templates/add_user.gohtml",
 		"templates/manage_users.gohtml",
+		"templates/edit_forms.gohtml",
 	),
 )
 
@@ -436,17 +437,6 @@ func ManageUsersFormHandler(w http.ResponseWriter, r *http.Request) {
 	render(w, "manage_users", map[string]interface{}{"User": user, "Users": users, "Ranks": ranks, "Success": targetUser.Username + " Updated"})
 }
 
-// small helper
-func sqlNullInt(v int) (ni sql.NullInt64) {
-	if v <= 0 {
-		ni.Valid = false
-		return
-	}
-	ni.Valid = true
-	ni.Int64 = int64(v)
-	return
-}
-
 // RestAPIs
 
 // RankGet Rank API to retrieve requirements
@@ -485,8 +475,8 @@ func RankGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// FormGet Form API to retrieve form by rankId
-func FormGet(w http.ResponseWriter, r *http.Request) {
+// FormForRankGet Form API to retrieve form by rankId
+func FormForRankGet(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -505,6 +495,42 @@ func FormGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	form, err := GetFormByRankID(id)
+	if err == sql.ErrNoRows {
+		http.Error(w, "Form not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(form)
+	if err != nil {
+		log.Printf("Error encoding form: %v", err)
+	}
+}
+
+// FormGet Form API to retrieve form by formId
+func FormGet(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	idParam := r.URL.Query().Get("formId")
+	if idParam == "" {
+		http.Error(w, "Missing formId parameter", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		http.Error(w, "Invalid formId parameter", http.StatusBadRequest)
+		return
+	}
+
+	form, err := GetFormByID(id)
 	if err == sql.ErrNoRows {
 		http.Error(w, "Form not found", http.StatusNotFound)
 		return
@@ -631,4 +657,63 @@ func lettersOnly(s string) string {
 		}
 	}
 	return b.String()
+}
+
+// small helper
+func sqlNullInt(v int) (ni sql.NullInt64) {
+	if v <= 0 {
+		ni.Valid = false
+		return
+	}
+	ni.Valid = true
+	ni.Int64 = int64(v)
+	return
+}
+
+func EditFormsPageHandler(w http.ResponseWriter, r *http.Request) {
+	forms, err := GetFormNames()
+
+	if err != nil {
+		http.Error(w, `{"error":"getting forms list failed"}`, http.StatusInternalServerError)
+		return
+	}
+
+	render(w, "edit_forms", map[string]interface{}{
+		"Forms": forms,
+	})
+}
+
+func EditFormsFormHandler(w http.ResponseWriter, r *http.Request) {
+	user, _ := CurrentUser(r)
+	err := r.ParseForm()
+	if err != nil {
+		log.Printf("Error parsing Manage User form: %v", err)
+	}
+	target := r.FormValue("selected_username")
+	// load the user
+	targetUser, err := GetUserByUsername(target)
+	if err != nil {
+		users, _ := GetAllUsersExcept(user.Username)
+		ranks, _ := GetAllRanks()
+		render(w, "manage_users", map[string]interface{}{"User": user, "Users": users, "Ranks": ranks, "Error": "cannot find user"})
+		return
+	}
+	// update fields
+	targetUser.FirstName = strings.TrimSpace(r.FormValue("first_name"))
+	targetUser.LastName = strings.TrimSpace(r.FormValue("last_name"))
+	targetUser.IsAdmin = parseBoolFromForm(r, "is_admin")
+	targetUser.IsActive = parseBoolFromForm(r, "is_active")
+	targetUser.AllowFullAccess = parseBoolFromForm(r, "allow_full_access")
+	rankID, _ := strconv.Atoi(r.FormValue("rank_id"))
+	targetUser.StudentRankID = sqlNullInt(rankID)
+	if err := UpdateUserAdminDetails(targetUser); err != nil {
+		users, _ := GetAllUsersExcept(user.Username)
+		ranks, _ := GetAllRanks()
+		render(w, "manage_users", map[string]interface{}{"User": user, "Users": users, "Ranks": ranks, "Error": "update failed"})
+		return
+	}
+
+	users, _ := GetAllUsersExcept(user.Username)
+	ranks, _ := GetAllRanks()
+	render(w, "manage_users", map[string]interface{}{"User": user, "Users": users, "Ranks": ranks, "Success": targetUser.Username + " Updated"})
 }
