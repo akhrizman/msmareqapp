@@ -793,7 +793,7 @@ func EditRequirementsFormHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rankRequirements := strings.TrimSpace(r.FormValue("rankRequirements"))
+	rankRequirements := strings.TrimSpace(r.FormValue("requirements"))
 	if rankRequirements == "" {
 		render(w, "edit_requirements", map[string]interface{}{"Error": "rank requirements required"})
 		return
