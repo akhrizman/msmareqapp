@@ -1,5 +1,5 @@
 {{ define "edit_forms" }}
-    {{template "component_layout_top" .}}
+    {{template "layout_top" .}}
     <link href="/static/app.css" rel="stylesheet" type="text/css">
     <h1>Edit Forms</h1>
 
@@ -45,7 +45,7 @@
             </button>
         </form>
 
-    {{template "component_layout_bottom" .}}
+    {{template "layout_bottom" .}}
 
     <script>
         const formSelection = document.getElementById("formSelect");

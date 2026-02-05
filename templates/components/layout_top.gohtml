@@ -1,5 +1,5 @@
 {{/*Top of every page on the site.*/}}
-{{define "component_layout_top"}}
+{{define "layout_top"}}
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -11,8 +11,8 @@
     </head>
     <body>
 
-    {{template "component_navbar" .}}
-    {{template "component_belt" .}}
+    {{template "navbar" .}}
+    {{template "belt" .}}
 
     <div class="container py-3">
         {{if .Error}}<div class="alert alert-danger">{{.Error}}</div>{{end}}

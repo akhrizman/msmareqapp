@@ -1,5 +1,5 @@
 {{ define "forms" }}
-    {{template "component_layout_top" .}}
+    {{template "layout_top" .}}
 
     <h2>FORMS</h2>
     <form method="post" action="/forms">
@@ -22,7 +22,7 @@
         <pre id="formSteps">{{.FormToDisplay.Steps}}</pre>
     {{end}}
 
-    {{template "component_layout_bottom" .}}
+    {{template "layout_bottom" .}}
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {

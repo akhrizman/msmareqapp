@@ -1,5 +1,5 @@
-{{ define "user_add" }}
-    {{template "component_layout_top" .}}
+{{ define "add_user" }}
+    {{template "layout_top" .}}
 
     <link href="/static/app.css" rel="stylesheet" type="text/css">
 
@@ -20,7 +20,6 @@
         <div class="mb-3">
             <label>Rank</label>
             <select name="rank_id" class="form-select">
-{{/*                <option value="1">New Student</option>*/}}
                 {{range .Ranks}}
                     <option value="{{.ID}}">{{.Name}}</option>
                 {{end}}
@@ -38,6 +37,6 @@
         <button class="btn btn-primary">Add User</button>
     </form>
 
-    {{template "component_layout_bottom" .}}
+    {{template "layout_bottom" .}}
 
 {{ end }}

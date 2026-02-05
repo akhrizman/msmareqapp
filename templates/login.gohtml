@@ -1,5 +1,5 @@
 {{ define "login" }}
-    {{template "component_layout_top" .}}
+    {{template "layout_top" .}}
 
     <h2>Login</h2>
     <form method="post" action="/login">
@@ -14,7 +14,7 @@
         <button class="btn btn-primary">Login</button>
     </form>
 
-    {{template "component_layout_bottom" .}}
+    {{template "layout_bottom" .}}
 
 {{ end }}
 

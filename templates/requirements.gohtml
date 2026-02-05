@@ -1,5 +1,5 @@
 {{ define "requirements" }}
-    {{template "component_layout_top" .}}
+    {{template "layout_top" .}}
 
     <h2>TESTING REQUIREMENTS</h2>
     <form method="post" action="/testing">
@@ -16,7 +16,7 @@
     <hr><br>
     <pre id="requirementText">{{.Req}}</pre>
 
-    {{template "component_layout_bottom" .}}
+    {{template "layout_bottom" .}}
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
