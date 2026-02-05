@@ -36,18 +36,18 @@ var templateFuncs = template.FuncMap{
 
 var templates = template.Must(
 	template.New("").Funcs(templateFuncs).ParseFiles(
-		"templates/navbar.gohtml",
-		"templates/belt.gohtml",
-		"templates/layout_top.gohtml",
-		"templates/layout_bottom.gohtml",
+		"templates/component_navbar.gohtml",
+		"templates/component_belt.gohtml",
+		"templates/component_layout_top.gohtml",
+		"templates/component_layout_bottom.gohtml",
 		"templates/home.gohtml",
 		"templates/login.gohtml",
 		"templates/profile.gohtml",
-		"templates/testing_requirements.gohtml",
+		"templates/requirements.gohtml",
 		"templates/forms.gohtml",
 		"templates/change_password.gohtml",
-		"templates/add_user.gohtml",
-		"templates/manage_users.gohtml",
+		"templates/user_add.gohtml",
+		"templates/user_manage.gohtml",
 		"templates/edit_forms.gohtml",
 	),
 )
@@ -226,7 +226,7 @@ func TestingRequirementsPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	nextRank, _ := GetRankByID(nextID)
 
-	render(w, "testing_requirements", map[string]interface{}{
+	render(w, "requirements", map[string]interface{}{
 		"User":     user,
 		"Dropdown": dropdown,
 		"Selected": selected,
@@ -307,7 +307,7 @@ func FormsPageHandler(w http.ResponseWriter, r *http.Request) {
 func AddUserPageHandler(w http.ResponseWriter, r *http.Request) {
 	user, _ := CurrentUser(r)
 	ranks, _ := GetAllRanks()
-	render(w, "add_user", map[string]interface{}{"User": user, "Ranks": ranks})
+	render(w, "user_add", map[string]interface{}{"User": user, "Ranks": ranks})
 }
 
 func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
@@ -328,7 +328,7 @@ func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
 
 	if first == "" || last == "" {
 		ranks, _ := GetAllRanks()
-		render(w, "add_user", map[string]interface{}{
+		render(w, "user_add", map[string]interface{}{
 			"User":  user,
 			"Ranks": ranks,
 			"Error": "missing fields",
@@ -344,7 +344,7 @@ func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
 
 	if username == "" {
 		ranks, _ := GetAllRanks()
-		render(w, "add_user", map[string]interface{}{
+		render(w, "user_add", map[string]interface{}{
 			"User":  user,
 			"Ranks": ranks,
 			"Error": "missing fields",
@@ -367,7 +367,7 @@ func AddUserFormHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err := CreateUser(newUser, hashed); err != nil {
 		ranks, _ := GetAllRanks()
-		render(w, "add_user", map[string]interface{}{
+		render(w, "user_add", map[string]interface{}{
 			"User":  user,
 			"Ranks": ranks,
 			"Error": "could not create user: " + err.Error(),
@@ -420,7 +420,7 @@ func ManageUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 		)
 	}
 
-	render(w, "manage_users", data)
+	render(w, "user_manage", data)
 }
 
 func ManageUsersFormHandler(w http.ResponseWriter, r *http.Request) {
@@ -435,7 +435,7 @@ func ManageUsersFormHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		users, _ := GetAllUsersExcept(user.Username)
 		ranks, _ := GetAllRanks()
-		render(w, "manage_users", map[string]interface{}{"User": user, "Users": users, "Ranks": ranks, "Error": "cannot find user"})
+		render(w, "user_manage", map[string]interface{}{"User": user, "Users": users, "Ranks": ranks, "Error": "cannot find user"})
 		return
 	}
 	// update fields
@@ -449,13 +449,13 @@ func ManageUsersFormHandler(w http.ResponseWriter, r *http.Request) {
 	if err := UpdateUserAdminDetails(targetUser); err != nil {
 		users, _ := GetAllUsersExcept(user.Username)
 		ranks, _ := GetAllRanks()
-		render(w, "manage_users", map[string]interface{}{"User": user, "Users": users, "Ranks": ranks, "Error": "update failed"})
+		render(w, "user_manage", map[string]interface{}{"User": user, "Users": users, "Ranks": ranks, "Error": "update failed"})
 		return
 	}
 
 	users, _ := GetAllUsersExcept(user.Username)
 	ranks, _ := GetAllRanks()
-	render(w, "manage_users", map[string]interface{}{"User": user, "Users": users, "Ranks": ranks, "Success": targetUser.Username + " Updated"})
+	render(w, "user_manage", map[string]interface{}{"User": user, "Users": users, "Ranks": ranks, "Success": targetUser.Username + " Updated"})
 }
 
 // RestAPIs

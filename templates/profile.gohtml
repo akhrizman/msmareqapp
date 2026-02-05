@@ -1,5 +1,5 @@
 {{ define "profile" }}
-    {{template "layout_top" .}}
+    {{template "component_layout_top" .}}
 
     <h2>My Profile</h2>
     <form method="post" action="/profile">
@@ -20,6 +20,6 @@
         <button class="btn btn-primary">Save</button>
     </form>
 
-    {{template "layout_bottom" .}}
+    {{template "component_layout_bottom" .}}
 
 {{ end }}
