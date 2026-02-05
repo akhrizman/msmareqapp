@@ -54,14 +54,14 @@
                         <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
                         <li class="nav-item"><a class="nav-link" href="/profile">My Profile</a></li>
 
-                        <li class="nav-item"><a class="nav-link" href="/testing">Requirements</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/requirements">Requirements</a></li>
                         <li class="nav-item"><a class="nav-link" href="/forms">Forms</a></li>
 
                         {{if .User.IsAdmin}}
-                            <li class="nav-item"><a class="nav-link" href="/admin/add-user">Add User</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/admin/manage-users">Edit Users</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/admin/edit-forms">Edit Forms</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/admin/edit-requirements">Edit Requirements</a></li>
+                            <li class="nav-item"><a class="nav-link admin-link" href="/admin/add-user">ADD USER</a></li>
+                            <li class="nav-item"><a class="nav-link admin-link" href="/admin/manage-users">EDIT USERS</a></li>
+                            <li class="nav-item"><a class="nav-link admin-link" href="/admin/edit-requirements">EDIT REQUIREMENTS</a></li>
+                            <li class="nav-item"><a class="nav-link admin-link" href="/admin/edit-forms">EDIT FORMS</a></li>
                         {{end}}
 
                     {{end}}

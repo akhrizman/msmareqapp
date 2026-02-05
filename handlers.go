@@ -43,6 +43,7 @@ var templates = template.Must(
 		"templates/admin/add_user.gohtml",
 		"templates/admin/manage_users.gohtml",
 		"templates/admin/edit_forms.gohtml",
+		"templates/admin/edit_requirements.gohtml",
 		"templates/home.gohtml",
 		"templates/login.gohtml",
 		"templates/profile.gohtml",
@@ -103,7 +104,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/change-password", http.StatusSeeOther)
 		return
 	}
-	http.Redirect(w, r, "/testing", http.StatusSeeOther)
+	http.Redirect(w, r, "/requirements", http.StatusSeeOther)
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -142,7 +143,7 @@ func ChangePasswordHandler(w http.ResponseWriter, r *http.Request) {
 		render(w, "change_password", map[string]interface{}{"User": user, "Error": "server error"})
 		return
 	}
-	http.Redirect(w, r, "/testing", http.StatusSeeOther)
+	http.Redirect(w, r, "/requirements", http.StatusSeeOther)
 }
 
 func ProfilePageHandler(w http.ResponseWriter, r *http.Request) {
@@ -712,7 +713,6 @@ func EditFormsFormHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//user, _ := CurrentUser(r)
 	err := r.ParseForm()
 
 	if err != nil {
@@ -747,10 +747,72 @@ func EditFormsFormHandler(w http.ResponseWriter, r *http.Request) {
 	form.Description = formDescription
 	form.Steps = formSteps
 
-	if err := UpdateForm(form); err != nil {
+	if err = UpdateForm(form); err != nil {
 		render(w, "edit_forms", map[string]interface{}{"Error": "server error"})
 		return
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/forms?id=%v", formId), http.StatusSeeOther)
+}
+
+func EditRequirementsPageHandler(w http.ResponseWriter, r *http.Request) {
+	user, _ := CurrentUser(r)
+	ranks, err := GetAllRanks()
+
+	if err != nil {
+		http.Error(w, `{"error":"getting ranks list failed"}`, http.StatusInternalServerError)
+		return
+	}
+
+	render(w, "edit_requirements", map[string]interface{}{
+		"User":  user,
+		"Ranks": ranks,
+	})
+}
+func EditRequirementsFormHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	err := r.ParseForm()
+
+	if err != nil {
+		log.Printf("error parsing Requirements Update rank: %v", err)
+	}
+
+	rankName := strings.TrimSpace(r.FormValue("rankName"))
+	if rankName == "" {
+		render(w, "edit_requirements", map[string]interface{}{"Error": "rank name required"})
+		return
+	}
+
+	rankDescription := strings.TrimSpace(r.FormValue("rankDescription"))
+	if rankDescription == "" {
+		render(w, "edit_requirements", map[string]interface{}{"Error": "rank description required"})
+		return
+	}
+
+	rankRequirements := strings.TrimSpace(r.FormValue("rankRequirements"))
+	if rankRequirements == "" {
+		render(w, "edit_requirements", map[string]interface{}{"Error": "rank requirements required"})
+		return
+	}
+
+	rankId, _ := strconv.Atoi(r.FormValue("rankId"))
+	rank, err := GetRankByID(rankId)
+	if err != nil {
+		log.Printf("error getting rank: %v", err)
+	}
+
+	rank.Name = rankName
+	rank.Description = rankDescription
+	rank.Requirements = rankRequirements
+
+	if err = UpdateRank(rank); err != nil {
+		render(w, "edit_requirements", map[string]interface{}{"Error": "server error"})
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/requirements?id=%v", rankId), http.StatusSeeOther)
 }

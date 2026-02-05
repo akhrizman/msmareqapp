@@ -5,9 +5,8 @@
 
         <form method="post" action="/admin/edit-forms">
             <div class="mb-3">
-{{/*                <label class="form-label">Select Form</label>*/}}
                 <select id="formSelect" class="form-select">
-                    <option value="">-- Select a form --</option>
+                    <option value="">-- Select a Form --</option>
                     {{range .Forms}}
                         <option value="{{.ID}}">{{.Name}}</option>
                     {{end}}

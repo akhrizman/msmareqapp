@@ -1,0 +1,109 @@
+{{ define "edit_requirements" }}
+    {{template "layout_top" .}}
+    <link href="/static/app.css" rel="stylesheet" type="text/css">
+    <h1>Edit Requirements</h1>
+
+    <form method="post" action="/admin/edit-requirements">
+        <div class="mb-3">
+            <select id="rankSelect" class="form-select">
+                <option value="">-- Select a Rank --</option>
+                {{range .Ranks}}
+                    <option value="{{.ID}}">{{.Name}}</option>
+                {{end}}
+            </select>
+        </div>
+
+        <input type="hidden" name="rankId" id="rankId">
+
+        <div class="mb-3">
+            <label class="form-label">Rank Name</label>
+            <input type="text" id="rankName" name="rankName" class="form-control mb-3" disabled>
+
+            <label class="form-label">Description</label>
+            <input type="text" id="rankDescription" name="rankDescription" class="form-control mb-3" disabled>
+
+            <label class="form-label">Text will not wrap on smaller devices.  It will appear exactly as it is displayed here, so it is recommended to avoid long lines.</label>
+            <textarea
+                    id="requirements"
+                    name="requirements"
+                    rows="20"
+                    class="form-control font-monospace font-like-pre"
+                    wrap="off"
+                    style="font-size:0.875em"
+                    disabled
+            ></textarea>
+        </div>
+
+        <button
+                id="saveBtn"
+                type="submit"
+                class="btn btn-primary"
+                disabled
+        >
+            Save
+        </button>
+    </form>
+
+    {{template "layout_bottom" .}}
+
+    <script>
+        const rankSelection = document.getElementById("rankSelect");
+        const saveButton = document.getElementById("saveBtn");
+
+        rankSelection.addEventListener("change", function () {
+            let rankName = document.getElementById("rankName");
+            let rankDescription = document.getElementById("rankDescription");
+            let requirements = document.getElementById("requirements");
+            let rankIdInput = document.getElementById("rankId");
+
+            const rankId = this.value;
+
+            if (!rankId) {
+                disableForm()
+                return;
+            }
+
+            rankIdInput.value = rankId;
+
+            fetch(`/rank?id=${encodeURIComponent(rankId)}`)
+                .then(resp => {
+                    if (!resp.ok) {
+                        throw new Error("Rank not found");
+                    }
+                    return resp.json();
+                })
+                .then(rank => {
+                    saveButton.disabled = false;
+                    rankName.disabled = false;
+                    rankDescription.disabled = false;
+                    requirements.disabled = false;
+
+                    rankName.value = rank.name || "";
+                    rankDescription.value = rank.description || "";
+                    requirements.value = rank.requirements || "";
+
+                })
+                .catch(() => {
+                    disableForm()
+                });
+        });
+
+        function disableForm() {
+            let rankName = document.getElementById("rankName");
+            let rankDescription = document.getElementById("rankDescription");
+            let requirements = document.getElementById("requirements");
+            let rankIdInput = document.getElementById("rankId");
+
+            saveButton.disabled = true;
+            rankName.disabled = true;
+            rankDescription.disabled = true;
+            requirements.disabled = true;
+
+            rankIdInput.value = 0;
+            rankName.value = "";
+            rankDescription.value = "";
+            requirements.value = "";
+        }
+    </script>
+
+{{end}}

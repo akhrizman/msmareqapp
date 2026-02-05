@@ -36,22 +36,22 @@ func main() {
 	auth.HandleFunc("/logout", LogoutHandler).Methods("GET")
 	auth.HandleFunc("/profile", ProfilePageHandler).Methods("GET")
 	auth.HandleFunc("/profile", ProfileUpdateFormHandler).Methods("POST")
-	auth.HandleFunc("/testing", TestingRequirementsPageHandler).Methods("GET")
+	auth.HandleFunc("/requirements", TestingRequirementsPageHandler).Methods("GET")
 	auth.HandleFunc("/forms", FormsPageHandler).Methods("GET")
 
-	// admin
+	// admin pages & auth
 	admin := r.PathPrefix("/admin").Subrouter()
 	admin.Use(func(next http.Handler) http.Handler { return RequireLogin(next) })
 	admin.Use(func(next http.Handler) http.Handler { return RequireAdmin(next) })
 
 	admin.HandleFunc("/add-user", AddUserPageHandler).Methods("GET")
 	admin.HandleFunc("/add-user", AddUserFormHandler).Methods("POST")
-
 	admin.HandleFunc("/manage-users", ManageUsersPageHandler).Methods("GET")
 	admin.HandleFunc("/manage-users", ManageUsersFormHandler).Methods("POST")
-
 	admin.HandleFunc("/edit-forms", EditFormsPageHandler).Methods("GET")
 	admin.HandleFunc("/edit-forms", EditFormsFormHandler).Methods("POST")
+	admin.HandleFunc("/edit-requirements", EditRequirementsPageHandler).Methods("GET")
+	admin.HandleFunc("/edit-requirements", EditRequirementsFormHandler).Methods("POST")
 
 	// RestAPI Endpoints
 	admin.HandleFunc("/user", UserGetHandler).Methods("GET")

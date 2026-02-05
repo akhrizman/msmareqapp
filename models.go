@@ -298,3 +298,8 @@ func UpdateForm(f *Form) error {
 	_, err := db.Exec(`UPDATE form SET name = ?, description = ?, steps = ? WHERE id = ?`, f.Name, f.Description, f.Steps, f.ID)
 	return err
 }
+
+func UpdateRank(sr *StudentRank) error {
+	_, err := db.Exec(`UPDATE student_rank SET name = ?, description = ?, requirements = ? WHERE id = ?`, sr.Name, sr.Description, sr.Requirements, sr.ID)
+	return err
+}
