@@ -15,6 +15,6 @@
     {{template "belt" .}}
 
     <div class="container py-3">
-        {{if .Error}}<div class="alert alert-danger">{{.Error}}</div>{{end}}
-        {{if .Success}}<div class="alert alert-success">{{.Success}}</div>{{end}}
+        {{if .Error}}<div class="alert alert-danger" id="globalFailAlert" >{{.Error}}</div>{{end}}
+        {{if .Success}}<div class="alert alert-success" id="globalSuccessAlert" >{{.Success}}</div>{{end}}
 {{end}}
