@@ -1,7 +1,7 @@
 {{ define "edit_forms" }}
     {{template "layout_top" .}}
     <link href="/static/app.css" rel="stylesheet" type="text/css">
-    <h1>Edit Forms</h1>
+    <h2>Edit Forms</h2>
 
         <form method="post" action="/admin/edit-forms">
             <div class="mb-3">
@@ -14,9 +14,10 @@
             </div>
 
             <input type="hidden" name="formId" id="formId">
+            <br>
 
             <div class="mb-3">
-                <label class="form-label">Name</label>
+                <label class="form-label">Form Name</label>
                 <input type="text" id="formName" name="formName" class="form-control mb-3" disabled>
 
                 <label class="form-label">Description</label>

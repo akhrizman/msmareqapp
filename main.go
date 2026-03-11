@@ -64,7 +64,7 @@ func main() {
 	// static (for local css/js)
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
-	log.Println("Starting server at :8080")
+	log.Println("Starting server at http://localhost:8080")
 	err := http.ListenAndServe(":8080", r)
 	if err != nil {
 		return

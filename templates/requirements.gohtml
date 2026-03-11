@@ -5,16 +5,19 @@
     <form method="post" action="/requirements">
         <div class="mb-3">
             <label for="rank" class="form-label">My Next Rank: <em>{{.NextRank.Name}}, {{.NextRank.Description}}</em></label>
+
             <hr>
+
+{{/*            <label class="form-label">Selected Rank</label>*/}}
             <select class="form-select" id="rank" name="rank_id">
-                {{range .Dropdown}}
+                {{range .RanksDropdown}}
                     <option value="{{.ID}}" {{if $.Selected}}{{if eq $.Selected.ID .ID}}selected{{end}}{{end}}>{{.Name}}</option>
                 {{end}}
-            </select>
+            </select><br>
         </div>
     </form>
 
-    <pre id="requirementText">{{.Req}}</pre>
+    <pre id="requirementText">{{.RequirementToDisplay}}</pre>
 
     {{template "layout_bottom" .}}
 
