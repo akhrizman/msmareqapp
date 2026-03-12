@@ -1,4 +1,5 @@
 .idea/*
 sql/userdata.sql
 sql/requirements.sql
+sql/forms.sql
 .env
